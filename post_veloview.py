@@ -4,10 +4,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 Working_Directory = os.getenv("Working_Directory")
+Output_Directory = os.getenv("Output_Directory")
 Cutoff_Intensity = os.getenv("Cutoff_Intensity")
 Filter_The_Data = os.getenv("Filter_The_Data") == "True"
 pcap_file_name = ""
 csv_file_names = []
+date = ""
 
 
 def scan_directory():
@@ -51,8 +53,56 @@ def csv_folder_hierarchy():
             shutil.copy(new_path, filtered_csvs_dir)
 
 
+def decode_pcap_file_name():
+    """
+    Extracts the data from the PCAP file name.
+    """
+    global date
+    datetime = pcap_file_name.split("_")[0]
+    date = f"{datetime[:4]}-{datetime[5:7]}-{datetime[8:10]}"
+
+
+def output_folder_hierarchy():
+    """
+    Creates a folder hierarchy for storing output files.
+    """
+    output_dir = os.path.join(output_dir, date)
+    os.makedirs(output_dir, exist_ok=True)
+    velodyne_dir = os.path.join(output_dir, "velodyne_points")
+    os.makedirs(velodyne_dir, exist_ok=True)
+    timestamps_start_path = os.path.join(velodyne_dir, "timestamps_start.txt")
+    with open(timestamps_start_path, "w") as f:
+        pass
+    timestamps_end_path = os.path.join(velodyne_dir, "timestamps_end.txt")
+    with open(timestamps_end_path, "w") as f:
+        pass
+    timestamps = os.path.join(velodyne_dir, "timestamps.txt")
+    with open(timestamps, "w") as f:
+        pass
+    data_dir = os.path.join(velodyne_dir, "data")
+    os.makedirs(data_dir, exist_ok=True)
+
+
 def create_folder_hierarchy():
+    """
+    Creates the folder hierarchy for the data preprocessing pipeline.
+    """
     csv_folder_hierarchy()
+    output_folder_hierarchy()
 
 
-scan_directory()
+def init_pipeline():
+    """
+    Initializes the data preprocessing pipeline.
+    """
+    scan_directory()
+    decode_pcap_file_name()
+    create_folder_hierarchy()
+
+
+def main():
+    init_pipeline()
+
+
+if __name__ == "__main__":
+    main()
