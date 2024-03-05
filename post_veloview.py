@@ -33,7 +33,7 @@ def csv_folder_hierarchy():
     Organizes CSV files into separate directories based on whether they are original or filtered.
 
     This function moves all CSV files in the working directory to a subdirectory named "VeloView Original CSVs".
-    If the `Filter_The_Data` flag is set to True, it also copies the CSV files to another subdirectory named 
+    If the `Filter_The_Data` flag is set to True, it also copies the CSV files to another subdirectory named
     "VeloView Filtered CSVs".
 
     The directories are created if they do not already exist.
