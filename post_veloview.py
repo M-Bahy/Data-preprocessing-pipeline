@@ -66,7 +66,8 @@ def output_folder_hierarchy():
     """
     Creates a folder hierarchy for storing output files.
     """
-    output_dir = os.path.join(output_dir, date)
+    global date
+    output_dir = os.path.join(Output_Directory, date)
     os.makedirs(output_dir, exist_ok=True)
     velodyne_dir = os.path.join(output_dir, "velodyne_points")
     os.makedirs(velodyne_dir, exist_ok=True)
@@ -101,7 +102,9 @@ def init_pipeline():
 
 
 def main():
+    print("Application started , please wait this may take a while.")
     init_pipeline()
+    print("Application finished successfully.")
 
 
 if __name__ == "__main__":
