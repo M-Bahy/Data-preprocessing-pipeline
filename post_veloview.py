@@ -105,6 +105,9 @@ def init_pipeline():
 
 
 def write_timestamps(start, end, avg):
+    """
+    Writes the time stamps to the output directory.
+    """
     pass
 
 
@@ -131,12 +134,11 @@ def process_csv_files():
 
 
 def main():
-    # print("Application started , please wait this may take a while.")
+    print("Application started , please wait this may take a while.")
     # init_pipeline()
     # process_csv_files()
-    # print("Application finished successfully.")
     process_csv_files()
-    pass
+    print("Application finished successfully.")
 
 
 if __name__ == "__main__":
