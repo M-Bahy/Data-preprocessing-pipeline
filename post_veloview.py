@@ -11,6 +11,7 @@ Filter_The_Data = os.getenv("Filter_The_Data") == "True"
 pcap_file_name = ""
 csv_file_names = []
 date = ""
+time = ""
 
 
 def scan_directory():
@@ -90,13 +91,6 @@ def init_pipeline():
     create_folder_hierarchy()
 
 
-def write_timestamps(start, end, avg):
-    """
-    Writes the time stamps to the output directory.
-    """
-    pass
-
-
 def process_csv_files():
     """
     Removes the extra columns and writes the time stamps.
@@ -109,10 +103,6 @@ def process_csv_files():
     for csv_file_name in csv_file_names:
         csv_file_path = os.path.join(csvs_dir, csv_file_name)
         data_frame = pd.read_csv(csv_file_path)
-        start_timestamp = data_frame["adjustedtime"][0]
-        end_timestamp = data_frame["adjustedtime"].iloc[-1]
-        avg_timestamp = (start_timestamp + end_timestamp) / 2
-        write_timestamps(start_timestamp, end_timestamp, avg_timestamp)
         data_frame = data_frame[
             ["Points_m_XYZ:0", "Points_m_XYZ:1", "Points_m_XYZ:2", "intensity"]
         ]
