@@ -1,13 +1,14 @@
 import os
 import shutil
 import pandas as pd
+from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
 load_dotenv()
 Working_Directory = os.getenv("Working_Directory")
 Output_Directory = os.getenv("Output_Directory")
 Cutoff_Intensity = os.getenv("Cutoff_Intensity")
-FPS = int(os.getenv("FPS"))
+offset = 1 / int(os.getenv("FPS")) * 1000000
 Filter_The_Data = os.getenv("Filter_The_Data") == "True"
 pcap_file_name = "2024-02-22-12-13-56_Velodyne-VLP-32C-Data"
 csv_file_names = []
@@ -58,8 +59,6 @@ def decode_pcap_file_name():
     datetime = pcap_file_name.split("_")[0]
     date = f"{datetime[:4]}-{datetime[5:7]}-{datetime[8:10]}"
     time = f"{datetime[11:13]}:{datetime[14:16]}:{datetime[17:19]}.000000"
-    print(datetime)
-    print(f"Date: {date}, Time: {time}")
 
 
 def output_folder_hierarchy():
@@ -106,17 +105,43 @@ def filter_the_data(data_frame):
     return data_frame[data_frame["intensity"] > int(Cutoff_Intensity)]
 
 
-def write_time_stamps():
-    current_microseconds = time.split(":")[2].split(".")[1]
-    print(current_microseconds)
+def add_offset():
+    """
+    Adds an offset to the global date and time variables.
+
+    This function combines the global `date` and `time` variables into a single datetime object,
+    then adds the offset (in microseconds) to the datetime object. The updated date and time are
+    stored back into the global variables.
+
+    Args:
+        None
+
+    Returns:
+        None
+    """
+    global date, time
+    daytime = datetime.strptime(date + " " + time, "%Y-%m-%d %H:%M:%S.%f")
+    offset_seconds = offset / 1e6
+    daytime += timedelta(seconds=offset_seconds)
+    date, time = daytime.strftime("%Y-%m-%d"), daytime.strftime("%H:%M:%S.%f")
 
 
-def write_time_stamp():
+def write_time_stamp(date, time):
+    """
+    Write the date and time to a timestamps file.
+
+    Args:
+        date (str): The date in the format "YYYY-MM-DD".
+        time (str): The time in the format "HH:MM:SS.mmmmmm".
+
+    Returns:
+        None
+    """
     timestamps = os.path.join(
         Output_Directory, date, "velodyne_points", "timestamps.txt"
     )
     with open(timestamps, "a") as f:
-        f.write(f"{time}\n")
+        f.write(f"{date} {time}\n")
 
 
 def process_csv_files():
@@ -134,10 +159,11 @@ def process_csv_files():
         data_frame = pd.read_csv(csv_file_path)
         if Filter_The_Data:
             data_frame = filter_the_data(data_frame)
-        if csv_file_name == csv_file_names[0]:
-            write_time_stamp()  # Initially timestamp is read from the pcap file name
-        else:
-            write_time_stamps()  # Subsequent timestamps are calculated from the previous timestamp and the fps
+        if (
+            csv_file_name != csv_file_names[0]
+        ):  # Because the first timestamp is read from the pcap file name
+            add_offset()
+        write_time_stamp(date, time)
         data_frame = data_frame[
             ["Points_m_XYZ:0", "Points_m_XYZ:1", "Points_m_XYZ:2", "intensity"]
         ]
@@ -145,8 +171,8 @@ def process_csv_files():
 
 
 def main():
-    # init_pipeline()
-    # process_csv_files()
+    print("Application started.")
+    init_pipeline()
     process_csv_files()
     print("Application finished successfully.")
 
