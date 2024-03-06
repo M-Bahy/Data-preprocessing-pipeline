@@ -66,12 +66,6 @@ def output_folder_hierarchy():
     os.makedirs(output_dir, exist_ok=True)
     velodyne_dir = os.path.join(output_dir, "velodyne_points")
     os.makedirs(velodyne_dir, exist_ok=True)
-    timestamps_start_path = os.path.join(velodyne_dir, "timestamps_start.txt")
-    with open(timestamps_start_path, "w") as f:
-        pass
-    timestamps_end_path = os.path.join(velodyne_dir, "timestamps_end.txt")
-    with open(timestamps_end_path, "w") as f:
-        pass
     timestamps = os.path.join(velodyne_dir, "timestamps.txt")
     with open(timestamps, "w") as f:
         pass
