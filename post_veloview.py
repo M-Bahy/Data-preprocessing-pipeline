@@ -7,8 +7,9 @@ load_dotenv()
 Working_Directory = os.getenv("Working_Directory")
 Output_Directory = os.getenv("Output_Directory")
 Cutoff_Intensity = os.getenv("Cutoff_Intensity")
+FPS = int(os.getenv("FPS"))
 Filter_The_Data = os.getenv("Filter_The_Data") == "True"
-pcap_file_name = ""
+pcap_file_name = "2024-02-22-12-13-56_Velodyne-VLP-32C-Data"
 csv_file_names = []
 date = ""
 time = ""
@@ -53,9 +54,12 @@ def decode_pcap_file_name():
     """
     Extracts the data from the PCAP file name.
     """
-    global date
+    global date, time
     datetime = pcap_file_name.split("_")[0]
     date = f"{datetime[:4]}-{datetime[5:7]}-{datetime[8:10]}"
+    time = f"{datetime[11:13]}:{datetime[14:16]}:{datetime[17:19]}.000000"
+    print(datetime)
+    print(f"Date: {date}, Time: {time}")
 
 
 def output_folder_hierarchy():
@@ -103,11 +107,16 @@ def filter_the_data(data_frame):
 
 
 def write_time_stamps():
-    pass
+    current_microseconds = time.split(":")[2].split(".")[1]
+    print(current_microseconds)
 
 
 def write_time_stamp():
-    pass
+    timestamps = os.path.join(
+        Output_Directory, date, "velodyne_points", "timestamps.txt"
+    )
+    with open(timestamps, "a") as f:
+        f.write(f"{time}\n")
 
 
 def process_csv_files():
@@ -126,9 +135,9 @@ def process_csv_files():
         if Filter_The_Data:
             data_frame = filter_the_data(data_frame)
         if csv_file_name == csv_file_names[0]:
-            write_time_stamp() # Initially timestamp is read from the pcap file name
+            write_time_stamp()  # Initially timestamp is read from the pcap file name
         else:
-            write_time_stamps() # Subsequent timestamps are calculated from the previous timestamp and the fps
+            write_time_stamps()  # Subsequent timestamps are calculated from the previous timestamp and the fps
         data_frame = data_frame[
             ["Points_m_XYZ:0", "Points_m_XYZ:1", "Points_m_XYZ:2", "intensity"]
         ]
