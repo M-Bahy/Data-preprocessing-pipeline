@@ -33,27 +33,19 @@ def scan_directory():
 
 def csv_folder_hierarchy():
     """
-    Organizes CSV files into separate directories based on whether they are original or filtered.
+    Organizes CSV files into a directory.
 
-    This function moves all CSV files in the working directory to a subdirectory named "VeloView Original CSVs".
-    If the `Filter_The_Data` flag is set to True, it also copies the CSV files to another subdirectory named
-    "VeloView Filtered CSVs".
+    This function moves all CSV files in the working directory to a subdirectory named "VeloView CSVs" and prepare a subdirectory for CloudCompare output.
 
-    The directories are created if they do not already exist.
+    The directory is created if it does not already exist.
     """
-    original_csvs_dir = os.path.join(Working_Directory, "VeloView Original CSVs")
-    os.makedirs(original_csvs_dir, exist_ok=True)
-    original_csvs_dir = os.path.join(Working_Directory, "CloudCompare Output")
-    os.makedirs(original_csvs_dir, exist_ok=True)
-    # if Filter_The_Data:
-    #     filtered_csvs_dir = os.path.join(Working_Directory, "VeloView Filtered CSVs")
-    #     os.makedirs(filtered_csvs_dir, exist_ok=True)
+    csvs_dir = os.path.join(Working_Directory, "VeloView CSVs")
+    os.makedirs(csvs_dir, exist_ok=True)
+    csvs_dir = os.path.join(Working_Directory, "CloudCompare Output")
+    os.makedirs(csvs_dir, exist_ok=True)
     for csv_file_name in csv_file_names:
         original_path = os.path.join(Working_Directory, csv_file_name)
-        shutil.move(original_path, original_csvs_dir)
-        # if Filter_The_Data:
-        #     new_path = os.path.join(original_csvs_dir, csv_file_name)
-        #     shutil.copy(new_path, filtered_csvs_dir)
+        shutil.move(original_path, csvs_dir)
 
 
 def decode_pcap_file_name():
@@ -115,13 +107,13 @@ def process_csv_files():
     """
     Removes the extra columns and writes the time stamps.
     """
-    original_csvs_dir = os.path.join(Working_Directory, "VeloView Original CSVs")
-    files = os.listdir(original_csvs_dir)
+    csvs_dir = os.path.join(Working_Directory, "VeloView CSVs")
+    files = os.listdir(csvs_dir)
     csv_file_names = [file for file in files]
     if not csv_file_names:
         raise Exception("CSV files not found")
     for csv_file_name in csv_file_names:
-        csv_file_path = os.path.join(original_csvs_dir, csv_file_name)
+        csv_file_path = os.path.join(csvs_dir, csv_file_name)
         data_frame = pd.read_csv(csv_file_path)
         start_timestamp = data_frame["adjustedtime"][0]
         end_timestamp = data_frame["adjustedtime"].iloc[-1]
@@ -134,7 +126,17 @@ def process_csv_files():
 
 
 def main():
-    print("Application started , please wait this may take a while.")
+    print("Welcome to the data preprocessing pipeline.")
+    print(
+        "Making sure this directory contains the pcap file with the default naming convention and the CSVs."
+    )
+    while True:
+        print("Press Enter to continue , Esc to exit.")
+        key = input()
+        if key == "":
+            break
+        elif key == "Esc":
+            return
     # init_pipeline()
     # process_csv_files()
     process_csv_files()
