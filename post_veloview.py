@@ -90,6 +90,7 @@ def init_pipeline():
     decode_pcap_file_name()
     create_folder_hierarchy()
 
+
 def filter_the_data(data_frame):
     """
     Filters the data based on the intensity.
@@ -100,8 +101,14 @@ def filter_the_data(data_frame):
     """
     return data_frame[data_frame["intensity"] > int(Cutoff_Intensity)]
 
+
 def write_time_stamps():
     pass
+
+
+def write_time_stamp():
+    pass
+
 
 def process_csv_files():
     """
@@ -112,12 +119,16 @@ def process_csv_files():
     csv_file_names = [file for file in files]
     if not csv_file_names:
         raise Exception("CSV files not found")
+
     for csv_file_name in csv_file_names:
         csv_file_path = os.path.join(csvs_dir, csv_file_name)
         data_frame = pd.read_csv(csv_file_path)
         if Filter_The_Data:
             data_frame = filter_the_data(data_frame)
-        write_time_stamps()
+        if csv_file_name == csv_file_names[0]:
+            write_time_stamp() # Initially timestamp is read from the pcap file name
+        else:
+            write_time_stamps() # Subsequent timestamps are calculated from the previous timestamp and the fps
         data_frame = data_frame[
             ["Points_m_XYZ:0", "Points_m_XYZ:1", "Points_m_XYZ:2", "intensity"]
         ]
