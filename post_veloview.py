@@ -44,8 +44,8 @@ def csv_folder_hierarchy():
     """
     csvs_dir = os.path.join(Working_Directory, "VeloView CSVs")
     os.makedirs(csvs_dir, exist_ok=True)
-    csvs_dir = os.path.join(Working_Directory, "CloudCompare Output")
-    os.makedirs(csvs_dir, exist_ok=True)
+    cloudcompare_dir = os.path.join(Working_Directory, "CloudCompare Output")
+    os.makedirs(cloudcompare_dir, exist_ok=True)
     for csv_file_name in csv_file_names:
         original_path = os.path.join(Working_Directory, csv_file_name)
         shutil.move(original_path, csvs_dir)
