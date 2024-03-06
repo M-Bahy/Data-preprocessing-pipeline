@@ -43,6 +43,8 @@ def csv_folder_hierarchy():
     """
     original_csvs_dir = os.path.join(Working_Directory, "VeloView Original CSVs")
     os.makedirs(original_csvs_dir, exist_ok=True)
+    original_csvs_dir = os.path.join(Working_Directory, "CloudCompare Output")
+    os.makedirs(original_csvs_dir, exist_ok=True)
     if Filter_The_Data:
         filtered_csvs_dir = os.path.join(Working_Directory, "VeloView Filtered CSVs")
         os.makedirs(filtered_csvs_dir, exist_ok=True)
@@ -101,8 +103,10 @@ def init_pipeline():
     decode_pcap_file_name()
     create_folder_hierarchy()
 
-def write_timestamps(start,end,avg):
+
+def write_timestamps(start, end, avg):
     pass
+
 
 def process_csv_files():
     """
