@@ -32,6 +32,9 @@ def scan_directory():
     if not pcap_files:
         raise Exception("PCAP file not found")
     pcap_file_name = pcap_files[0]
+    print("Scanned directory successfully")
+    print(f"PCAP file found: {pcap_file_name}")
+    print(f"CSV files found: {len(csv_file_names)} files")
 
 
 def csv_folder_hierarchy():
@@ -49,6 +52,7 @@ def csv_folder_hierarchy():
     for csv_file_name in csv_file_names:
         original_path = os.path.join(Working_Directory, csv_file_name)
         shutil.move(original_path, csvs_dir)
+    print("CSV folder hierarchy created successfully.")
 
 
 def decode_pcap_file_name():
@@ -59,6 +63,7 @@ def decode_pcap_file_name():
     datetime = pcap_file_name.split("_")[0]
     date = f"{datetime[:4]}-{datetime[5:7]}-{datetime[8:10]}"
     time = f"{datetime[11:13]}:{datetime[14:16]}:{datetime[17:19]}.000000"
+    print("Decoded PCAP file name successfully")
 
 
 def output_folder_hierarchy():
@@ -75,6 +80,7 @@ def output_folder_hierarchy():
         pass
     data_dir = os.path.join(velodyne_dir, "data")
     os.makedirs(data_dir, exist_ok=True)
+    print("Output folder hierarchy created successfully.")
 
 
 def create_folder_hierarchy():
@@ -168,6 +174,7 @@ def process_csv_files():
             ["Points_m_XYZ:0", "Points_m_XYZ:1", "Points_m_XYZ:2", "intensity"]
         ]
         data_frame.to_csv(csv_file_path, index=False)  # save the csv
+    print("Processed CSV files successfully.")
 
 
 def main():
