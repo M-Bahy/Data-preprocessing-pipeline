@@ -1,5 +1,6 @@
 import os
 import shutil
+import pandas as pd
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -23,7 +24,7 @@ def scan_directory():
     files = os.listdir(Working_Directory)
     csv_file_names = [file for file in files if file.endswith(".csv")]
     if not csv_file_names:
-        raise Exception("CSV file not found")
+        raise Exception("CSV files not found")
     pcap_files = [file for file in files if file.endswith(".pcap")]
     if not pcap_files:
         raise Exception("PCAP file not found")
@@ -100,11 +101,38 @@ def init_pipeline():
     decode_pcap_file_name()
     create_folder_hierarchy()
 
+def write_timestamps(start,end,avg):
+    pass
+
+def process_csv_files():
+    """
+    Removes the extra columns and writes the time stamps.
+    """
+    original_csvs_dir = os.path.join(Working_Directory, "VeloView Original CSVs")
+    files = os.listdir(original_csvs_dir)
+    csv_file_names = [file for file in files]
+    if not csv_file_names:
+        raise Exception("CSV files not found")
+    for csv_file_name in csv_file_names:
+        csv_file_path = os.path.join(original_csvs_dir, csv_file_name)
+        data_frame = pd.read_csv(csv_file_path)
+        start_timestamp = data_frame["adjustedtime"][0]
+        end_timestamp = data_frame["adjustedtime"].iloc[-1]
+        avg_timestamp = (start_timestamp + end_timestamp) / 2
+        write_timestamps(start_timestamp, end_timestamp, avg_timestamp)
+        data_frame = data_frame[
+            ["Points_m_XYZ:0", "Points_m_XYZ:1", "Points_m_XYZ:2", "intensity"]
+        ]
+        data_frame.to_csv(csv_file_path, index=False)  # save the csv
+
 
 def main():
-    print("Application started , please wait this may take a while.")
-    init_pipeline()
-    print("Application finished successfully.")
+    # print("Application started , please wait this may take a while.")
+    # init_pipeline()
+    # process_csv_files()
+    # print("Application finished successfully.")
+    process_csv_files()
+    pass
 
 
 if __name__ == "__main__":
