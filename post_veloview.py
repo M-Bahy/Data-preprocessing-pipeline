@@ -145,17 +145,6 @@ def process_csv_files():
 
 
 def main():
-    print("Welcome to the data preprocessing pipeline.")
-    print(
-        "Making sure this directory contains the pcap file with the default naming convention and the CSVs."
-    )
-    while True:
-        print("Press Enter to continue , Esc to exit.")
-        key = input()
-        if key == "":
-            break
-        elif key == "Esc":
-            return
     # init_pipeline()
     # process_csv_files()
     process_csv_files()
