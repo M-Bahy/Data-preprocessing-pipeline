@@ -172,7 +172,7 @@ def process_csv_files():
         data_frame = data_frame[
             ["Points_m_XYZ:0", "Points_m_XYZ:1", "Points_m_XYZ:2", "intensity"]
         ]
-        data_frame.to_csv(csv_file_path,header=False ,index=False)
+        data_frame.to_csv(csv_file_path, header=False, index=False)
         if count % 10 == 0:
             print(f"Processed {count} CSV files.")
     timestamps = os.path.join(
