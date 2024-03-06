@@ -100,6 +100,9 @@ def filter_the_data(data_frame):
     """
     return data_frame[data_frame["intensity"] > int(Cutoff_Intensity)]
 
+def write_time_stamps():
+    pass
+
 def process_csv_files():
     """
     Removes the extra columns and writes the time stamps.
@@ -114,6 +117,7 @@ def process_csv_files():
         data_frame = pd.read_csv(csv_file_path)
         if Filter_The_Data:
             data_frame = filter_the_data(data_frame)
+        write_time_stamps()
         data_frame = data_frame[
             ["Points_m_XYZ:0", "Points_m_XYZ:1", "Points_m_XYZ:2", "intensity"]
         ]
