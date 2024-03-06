@@ -159,21 +159,29 @@ def process_csv_files():
     csv_file_names = [file for file in files]
     if not csv_file_names:
         raise Exception("CSV files not found")
-
+    count = 0
     for csv_file_name in csv_file_names:
+        count += 1
         csv_file_path = os.path.join(csvs_dir, csv_file_name)
         data_frame = pd.read_csv(csv_file_path)
         if Filter_The_Data:
             data_frame = filter_the_data(data_frame)
-        if (
-            csv_file_name != csv_file_names[0]
-        ):  # Because the first timestamp is read from the pcap file name
+        if csv_file_name != csv_file_names[0]:
             add_offset()
         write_time_stamp(date, time)
         data_frame = data_frame[
             ["Points_m_XYZ:0", "Points_m_XYZ:1", "Points_m_XYZ:2", "intensity"]
         ]
-        data_frame.to_csv(csv_file_path, index=False)  # save the csv
+        data_frame.to_csv(csv_file_path, index=False)
+        if count % 10 == 0:
+            print(f"Processed {count} CSV files.")
+    timestamps = os.path.join(
+        Output_Directory, date, "velodyne_points", "timestamps.txt"
+    )
+    with open(timestamps, "r") as f:
+        lines = f.readlines()
+    with open(timestamps, "w") as f:
+        f.writelines(lines[:-1])
     print("Processed CSV files successfully.")
 
 
