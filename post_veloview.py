@@ -45,15 +45,15 @@ def csv_folder_hierarchy():
     os.makedirs(original_csvs_dir, exist_ok=True)
     original_csvs_dir = os.path.join(Working_Directory, "CloudCompare Output")
     os.makedirs(original_csvs_dir, exist_ok=True)
-    if Filter_The_Data:
-        filtered_csvs_dir = os.path.join(Working_Directory, "VeloView Filtered CSVs")
-        os.makedirs(filtered_csvs_dir, exist_ok=True)
+    # if Filter_The_Data:
+    #     filtered_csvs_dir = os.path.join(Working_Directory, "VeloView Filtered CSVs")
+    #     os.makedirs(filtered_csvs_dir, exist_ok=True)
     for csv_file_name in csv_file_names:
         original_path = os.path.join(Working_Directory, csv_file_name)
         shutil.move(original_path, original_csvs_dir)
-        if Filter_The_Data:
-            new_path = os.path.join(original_csvs_dir, csv_file_name)
-            shutil.copy(new_path, filtered_csvs_dir)
+        # if Filter_The_Data:
+        #     new_path = os.path.join(original_csvs_dir, csv_file_name)
+        #     shutil.copy(new_path, filtered_csvs_dir)
 
 
 def decode_pcap_file_name():
