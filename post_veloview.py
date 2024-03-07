@@ -47,8 +47,6 @@ def csv_folder_hierarchy():
     """
     csvs_dir = os.path.join(Working_Directory, "VeloView CSVs")
     os.makedirs(csvs_dir, exist_ok=True)
-    cloudcompare_dir = os.path.join(Working_Directory, "CloudCompare Output")
-    os.makedirs(cloudcompare_dir, exist_ok=True)
     for csv_file_name in csv_file_names:
         original_path = os.path.join(Working_Directory, csv_file_name)
         shutil.move(original_path, csvs_dir)
@@ -161,7 +159,6 @@ def process_csv_files():
         raise Exception("CSV files not found")
     count = 0
     for csv_file_name in csv_file_names:
-        count += 1
         csv_file_path = os.path.join(csvs_dir, csv_file_name)
         data_frame = pd.read_csv(csv_file_path)
         if Filter_The_Data:
@@ -172,7 +169,14 @@ def process_csv_files():
         data_frame = data_frame[
             ["Points_m_XYZ:0", "Points_m_XYZ:1", "Points_m_XYZ:2", "intensity"]
         ]
-        data_frame.to_csv(csv_file_path, header=False, index=False)
+        data_frame = data_frame.map(lambda x: f"{float(x):.8f}")
+        # Format count as a six-digit string
+        count_str = str(count).zfill(6)
+        txt_path = os.path.join(
+            Output_Directory, date, "velodyne_points", "data", f"{count_str}.txt"
+        )
+        data_frame.to_csv(txt_path, sep=" ", header=False, index=False)
+        count += 1
         if count % 10 == 0:
             print(f"Processed {count} CSV files.")
     timestamps = os.path.join(
