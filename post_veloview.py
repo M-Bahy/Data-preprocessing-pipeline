@@ -169,7 +169,7 @@ def process_csv_files():
         data_frame = data_frame[
             ["Points_m_XYZ:0", "Points_m_XYZ:1", "Points_m_XYZ:2", "intensity"]
         ]
-        data_frame = data_frame.map(lambda x: f"{float(x):.8f}")
+        data_frame = data_frame.applymap(lambda x: f"{float(x):.8f}")
         # Format count as a six-digit string
         count_str = str(count).zfill(6)
         txt_path = os.path.join(
