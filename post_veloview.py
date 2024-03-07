@@ -10,7 +10,7 @@ Output_Directory = os.getenv("Output_Directory")
 Cutoff_Intensity = os.getenv("Cutoff_Intensity")
 offset = 1 / int(os.getenv("FPS")) * 1000000
 Filter_The_Data = os.getenv("Filter_The_Data") == "True"
-pcap_file_name = "2024-02-22-12-13-56_Velodyne-VLP-32C-Data"
+pcap_file_name = ""
 csv_file_names = []
 date = ""
 time = ""
@@ -166,13 +166,6 @@ def process_csv_files():
         count += 1
         if count % 10 == 0:
             print(f"Processed {count} CSV files.")
-    timestamps = os.path.join(
-        Output_Directory, date, "velodyne_points", "timestamps.txt"
-    )
-    with open(timestamps, "r") as f:
-        lines = f.readlines()
-    with open(timestamps, "w") as f:
-        f.writelines(lines[:-1])
     print("Processed CSV files successfully.")
 
 
