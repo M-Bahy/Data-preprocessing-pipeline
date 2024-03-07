@@ -141,7 +141,8 @@ def process_csv_files():
         None
     """
     files = os.listdir(Working_Directory)
-    csv_file_names = [file for file in files]
+    csv_file_names = [file for file in files if file.endswith(".csv")]
+    csv_file_names.sort(key=lambda file: int(file.split(" ")[-1].split(".")[0][:-1]))
     if not csv_file_names:
         raise Exception("CSV files not found")
     count = 0
