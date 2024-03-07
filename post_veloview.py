@@ -37,22 +37,6 @@ def scan_directory():
     print(f"CSV files found: {len(csv_file_names)} files")
 
 
-def csv_folder_hierarchy():
-    """
-    Organizes CSV files into a directory.
-
-    This function moves all CSV files in the working directory to a subdirectory named "VeloView CSVs" and prepare a subdirectory for CloudCompare output.
-
-    The directory is created if it does not already exist.
-    """
-    csvs_dir = os.path.join(Working_Directory, "VeloView CSVs")
-    os.makedirs(csvs_dir, exist_ok=True)
-    for csv_file_name in csv_file_names:
-        original_path = os.path.join(Working_Directory, csv_file_name)
-        shutil.move(original_path, csvs_dir)
-    print("CSV folder hierarchy created successfully.")
-
-
 def decode_pcap_file_name():
     """
     Extracts the data from the PCAP file name.
@@ -81,21 +65,13 @@ def output_folder_hierarchy():
     print("Output folder hierarchy created successfully.")
 
 
-def create_folder_hierarchy():
-    """
-    Creates the folder hierarchy for the data preprocessing pipeline.
-    """
-    csv_folder_hierarchy()
-    output_folder_hierarchy()
-
-
 def init_pipeline():
     """
     Initializes the data preprocessing pipeline.
     """
     scan_directory()
     decode_pcap_file_name()
-    create_folder_hierarchy()
+    output_folder_hierarchy()
 
 
 def filter_the_data(data_frame):
@@ -150,16 +126,27 @@ def write_time_stamp(date, time):
 
 def process_csv_files():
     """
-    Removes the extra columns and writes the time stamps.
+    Process CSV files in the Working_Directory and convert them to TXT files.
+
+    This function reads each CSV file in the Working_Directory, applies optional data filtering,
+    converts the columns to a specific format (x y z intensity), and saves the resulting data as TXT files,
+    In the output directory. The function also writes the timestamps of the TXT files to a timestamps file.
+    Each timestamp is written in the format "YYYY-MM-DD HH:MM:SS.mmmmmm" and represents the time of the
+    corresponding TXT file.
+
+    Raises:
+        Exception: If no CSV files are found in the Working_Directory.
+
+    Returns:
+        None
     """
-    csvs_dir = os.path.join(Working_Directory, "VeloView CSVs")
-    files = os.listdir(csvs_dir)
+    files = os.listdir(Working_Directory)
     csv_file_names = [file for file in files]
     if not csv_file_names:
         raise Exception("CSV files not found")
     count = 0
     for csv_file_name in csv_file_names:
-        csv_file_path = os.path.join(csvs_dir, csv_file_name)
+        csv_file_path = os.path.join(Working_Directory, csv_file_name)
         data_frame = pd.read_csv(csv_file_path)
         if Filter_The_Data:
             data_frame = filter_the_data(data_frame)
@@ -170,7 +157,6 @@ def process_csv_files():
             ["Points_m_XYZ:0", "Points_m_XYZ:1", "Points_m_XYZ:2", "intensity"]
         ]
         data_frame = data_frame.applymap(lambda x: f"{float(x):.8f}")
-        # Format count as a six-digit string
         count_str = str(count).zfill(6)
         txt_path = os.path.join(
             Output_Directory, date, "velodyne_points", "data", f"{count_str}.txt"
