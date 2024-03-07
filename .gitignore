@@ -3,3 +3,5 @@
 desktop.ini
 .env
 tmp*.py
+config.ini
+output.txt
