@@ -1,0 +1,3 @@
+@echo off
+echo Running Command Prompt as Administrator...
+powershell Start-Process cmd -Verb RunAs -ArgumentList '/k cd /d D:\CMS\Bachelor\Softwares\CloudComparePYBinaries\CloudComPy310 ^&^& conda activate CloudComPy310 ^&^& envCloudComPy.bat ^&^& Python myscript.py'
