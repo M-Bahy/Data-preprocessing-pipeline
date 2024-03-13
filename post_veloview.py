@@ -9,7 +9,6 @@ Working_Directory = os.getenv("Working_Directory")
 Output_Directory = os.getenv("Output_Directory")
 Cutoff_Intensity = os.getenv("Cutoff_Intensity")
 offset = 1 / int(os.getenv("FPS")) * 1000000
-Filter_The_Data = os.getenv("Filter_The_Data") == "True"
 pcap_file_name = ""
 csv_file_names = []
 date = ""
@@ -72,17 +71,6 @@ def init_pipeline():
     scan_directory()
     decode_pcap_file_name()
     output_folder_hierarchy()
-
-
-def filter_the_data(data_frame):
-    """
-    Filters the data based on the intensity.
-    Args:
-        data_frame (pandas.DataFrame): The data frame to be filtered.
-    Returns:
-        pandas.DataFrame: The filtered data frame.
-    """
-    return data_frame[data_frame["intensity"] > int(Cutoff_Intensity)]
 
 
 def add_offset():
@@ -149,8 +137,6 @@ def process_csv_files():
     for csv_file_name in csv_file_names:
         csv_file_path = os.path.join(Working_Directory, csv_file_name)
         data_frame = pd.read_csv(csv_file_path)
-        if Filter_The_Data:
-            data_frame = filter_the_data(data_frame)
         if csv_file_name != csv_file_names[0]:
             add_offset()
         write_time_stamp(date, time)
