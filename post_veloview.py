@@ -7,17 +7,12 @@ from dotenv import load_dotenv
 load_dotenv()
 Parent_Directory = os.getenv("Parent_Directory")
 Output_Directory = os.getenv("Output_Directory")
-Cutoff_Intensity = os.getenv("Cutoff_Intensity")
 offset = 1 / int(os.getenv("FPS")) * 1000000
-recording_file_name = ""
-csv_file_names = []
 sub_directories = [
     d
     for d in os.listdir(Parent_Directory)
     if os.path.isdir(os.path.join(Parent_Directory, d))
 ]
-date = ""
-time = ""
 
 
 def scan_sub_directory(sub_directory):
@@ -26,33 +21,32 @@ def scan_sub_directory(sub_directory):
     Raises:
         Exception: If no CSV files are found in the directory.
     """
-    global recording_file_name, csv_file_names
     files = os.listdir(os.path.join(Parent_Directory, sub_directory))
     csv_file_names = [file for file in files if file.endswith(".csv")]
     if not csv_file_names:
         raise Exception("CSV files not found")
-    recording_file_name = csv_file_names[0]
+    recording_file_name = csv_file_names[0].split(" ")[0]
     print("Scanned directory successfully")
     print(f"Recording file name: {recording_file_name}")
     print(f"CSV files found: {len(csv_file_names)} files")
+    return recording_file_name, csv_file_names
 
 
-def decode_recording_file_name():
+def decode_recording_file_name(recording_file_name):
     """
     Extracts the data from the recording file name.
     """
-    global date, time
     datetime = recording_file_name.split("_")[0]
     date = f"{datetime[:4]}-{datetime[5:7]}-{datetime[8:10]}"
     time = f"{datetime[11:13]}:{datetime[14:16]}:{datetime[17:19]}.000000"
     print("Decoded recording file name successfully")
+    return date, time
 
 
-def output_folder_hierarchy(sub_directory):
+def output_folder_hierarchy(sub_directory, date):
     """
     Creates a folder hierarchy for storing output files.
     """
-    global date
     output_dir = os.path.join(Output_Directory, sub_directory, date)
     os.makedirs(output_dir, exist_ok=True)
     velodyne_dir = os.path.join(output_dir, "velodyne_points")
@@ -69,12 +63,13 @@ def init_pipeline(sub_directory):
     """
     Initializes the data preprocessing pipeline.
     """
-    scan_sub_directory(sub_directory)
-    decode_recording_file_name()
-    output_folder_hierarchy(sub_directory)
+    recording_file_name, csv_file_names = scan_sub_directory(sub_directory)
+    date, time = decode_recording_file_name(recording_file_name)
+    output_folder_hierarchy(sub_directory, date)
+    return recording_file_name, csv_file_names, date, time
 
 
-def add_offset():
+def add_offset(date, time):
     """
     Adds an offset to the global date and time variables.
 
@@ -88,11 +83,11 @@ def add_offset():
     Returns:
         None
     """
-    global date, time
     daytime = datetime.strptime(date + " " + time, "%Y-%m-%d %H:%M:%S.%f")
     offset_seconds = offset / 1e6
     daytime += timedelta(seconds=offset_seconds)
     date, time = daytime.strftime("%Y-%m-%d"), daytime.strftime("%H:%M:%S.%f")
+    return date, time
 
 
 def write_time_stamp(date, time, sub_directory):
@@ -113,7 +108,7 @@ def write_time_stamp(date, time, sub_directory):
         f.write(f"{date} {time}\n")
 
 
-def process_csv_files(sub_directory, directory_number):
+def process_csv_files(csv_file_names ,sub_directory, directory_number, date, time):
     """
     Process CSV files in the sub_directory and convert them to TXT files.
 
@@ -138,7 +133,7 @@ def process_csv_files(sub_directory, directory_number):
         csv_file_path = os.path.join(Parent_Directory, sub_directory, csv_file_name)
         data_frame = pd.read_csv(csv_file_path)
         if csv_file_name != csv_file_names[0]:
-            add_offset()
+            add_offset(date, time)
         write_time_stamp(date, time, sub_directory)
         data_frame = data_frame[
             ["Points_m_XYZ:0", "Points_m_XYZ:1", "Points_m_XYZ:2", "intensity"]
@@ -157,14 +152,14 @@ def process_csv_files(sub_directory, directory_number):
         if count % 10 == 0:
             percentage = (count / len(csv_file_names)) * 100
             print(
-                f"Processed {percentage:.2f}% of the CSV files in directory {directory_number}."
+                f"Processed {percentage:.2f}% of the CSV files in {sub_directory} (directory {directory_number})."
             )
     print("Processed CSV files successfully.")
 
 
 def convert_to_kitti_format(sub_directory, directory_number):
-    init_pipeline(sub_directory)
-    process_csv_files(sub_directory, directory_number)
+    recording_file_name, csv_file_names, date, time = init_pipeline(sub_directory)
+    process_csv_files(csv_file_names ,sub_directory, directory_number, date, time)
 
 
 def main():
