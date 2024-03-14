@@ -169,7 +169,7 @@ def filter_the_data(sub_directory, date):
     """
     Filter the data using the CloudComPy library.
     """
-    commands = ["pause"]
+    commands = [f"cd {CloudComPy310_path}" , "conda activate CloudComPy310" , "envCloudComPy.bat" , f"Python {Filter_script_path}"]
     for cmd in commands:
         subprocess.run(cmd, shell=True)
     print("Filtered the data successfully.")
