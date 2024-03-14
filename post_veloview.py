@@ -9,7 +9,7 @@ Parent_Directory = os.getenv("Parent_Directory")
 Output_Directory = os.getenv("Output_Directory")
 Cutoff_Intensity = os.getenv("Cutoff_Intensity")
 offset = 1 / int(os.getenv("FPS")) * 1000000
-pcap_file_name = ""
+recording_file_name = ""
 csv_file_names = []
 sub_directories = [
     d
@@ -22,34 +22,30 @@ time = ""
 
 def scan_sub_directory(sub_directory):
     """
-    Scans the directory for CSV and PCAP files.
+    Scans the directory for CSV files.
     Raises:
         Exception: If no CSV files are found in the directory.
-        Exception: If no PCAP file is found in the directory.
     """
-    global pcap_file_name, csv_file_names
+    global recording_file_name, csv_file_names
     files = os.listdir(os.path.join(Parent_Directory, sub_directory))
     csv_file_names = [file for file in files if file.endswith(".csv")]
     if not csv_file_names:
         raise Exception("CSV files not found")
-    pcap_files = [file for file in files if file.endswith(".pcap")]
-    if not pcap_files:
-        raise Exception("PCAP file not found")
-    pcap_file_name = pcap_files[0]
+    recording_file_name = csv_file_names[0]
     print("Scanned directory successfully")
-    print(f"PCAP file found: {pcap_file_name}")
+    print(f"Recording file name: {recording_file_name}")
     print(f"CSV files found: {len(csv_file_names)} files")
 
 
-def decode_pcap_file_name():
+def decode_recording_file_name():
     """
-    Extracts the data from the PCAP file name.
+    Extracts the data from the recording file name.
     """
     global date, time
-    datetime = pcap_file_name.split("_")[0]
+    datetime = recording_file_name.split("_")[0]
     date = f"{datetime[:4]}-{datetime[5:7]}-{datetime[8:10]}"
     time = f"{datetime[11:13]}:{datetime[14:16]}:{datetime[17:19]}.000000"
-    print("Decoded PCAP file name successfully")
+    print("Decoded recording file name successfully")
 
 
 def output_folder_hierarchy(sub_directory):
@@ -74,7 +70,7 @@ def init_pipeline(sub_directory):
     Initializes the data preprocessing pipeline.
     """
     scan_sub_directory(sub_directory)
-    decode_pcap_file_name()
+    decode_recording_file_name()
     output_folder_hierarchy(sub_directory)
 
 
