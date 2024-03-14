@@ -1,5 +1,4 @@
 import os
-import shutil
 import pandas as pd
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
@@ -108,7 +107,7 @@ def write_time_stamp(date, time, sub_directory):
         f.write(f"{date} {time}\n")
 
 
-def process_csv_files(csv_file_names ,sub_directory, directory_number, date, time):
+def process_csv_files(csv_file_names, sub_directory, directory_number, date, time):
     """
     Process CSV files in the sub_directory and convert them to TXT files.
 
@@ -159,13 +158,16 @@ def process_csv_files(csv_file_names ,sub_directory, directory_number, date, tim
 
 def convert_to_kitti_format(sub_directory, directory_number):
     recording_file_name, csv_file_names, date, time = init_pipeline(sub_directory)
-    process_csv_files(csv_file_names ,sub_directory, directory_number, date, time)
+    process_csv_files(csv_file_names, sub_directory, directory_number, date, time)
 
 
 def main():
     print("Application started.")
+    start_time = datetime.now()
     for directory_number, sub_directory in enumerate(sub_directories, start=1):
         convert_to_kitti_format(sub_directory, directory_number)
+    end_time = datetime.now()
+    print(f"Time taken to process the data: {end_time - start_time}")
     print("Application finished successfully.")
 
 
