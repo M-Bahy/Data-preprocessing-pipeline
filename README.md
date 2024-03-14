@@ -1,6 +1,6 @@
 # Project Title
 
-The data preprocessing pipeline for the Sensor Calibration and Data Collection Pipeline Bachelor Thesis Project 24' at the GUC under the supervision of Dr. Eng. Catherine M. Elias.
+The data preprocessing pipeline for the Sensor Calibration and Data Collection Pipeline Bachelor Thesis Project 24' at the GUC under the supervision of Dr. Eng. Catherine M. Elias. <br/>
 The script takes a pcap lidar recording and CSVs of all the frames and outputs the data in KITTI format by removing the extra columns and adding the timestamp to the point cloud data and converting the point cloud into text files.
 
 ## Installation
