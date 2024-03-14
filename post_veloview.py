@@ -5,25 +5,30 @@ from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
 load_dotenv()
-Working_Directory = os.getenv("Working_Directory")
+Parent_Directory = os.getenv("Parent_Directory")
 Output_Directory = os.getenv("Output_Directory")
 Cutoff_Intensity = os.getenv("Cutoff_Intensity")
 offset = 1 / int(os.getenv("FPS")) * 1000000
 pcap_file_name = ""
 csv_file_names = []
+sub_directories = [
+    d
+    for d in os.listdir(Parent_Directory)
+    if os.path.isdir(os.path.join(Parent_Directory, d))
+]
 date = ""
 time = ""
 
 
-def scan_directory():
+def scan_sub_directory(sub_directory):
     """
-    Scans the working directory for CSV and PCAP files.
+    Scans the directory for CSV and PCAP files.
     Raises:
         Exception: If no CSV files are found in the directory.
         Exception: If no PCAP file is found in the directory.
     """
     global pcap_file_name, csv_file_names
-    files = os.listdir(Working_Directory)
+    files = os.listdir(os.path.join(Parent_Directory, sub_directory))
     csv_file_names = [file for file in files if file.endswith(".csv")]
     if not csv_file_names:
         raise Exception("CSV files not found")
@@ -47,12 +52,12 @@ def decode_pcap_file_name():
     print("Decoded PCAP file name successfully")
 
 
-def output_folder_hierarchy():
+def output_folder_hierarchy(sub_directory):
     """
     Creates a folder hierarchy for storing output files.
     """
     global date
-    output_dir = os.path.join(Output_Directory, date)
+    output_dir = os.path.join(Output_Directory, sub_directory, date)
     os.makedirs(output_dir, exist_ok=True)
     velodyne_dir = os.path.join(output_dir, "velodyne_points")
     os.makedirs(velodyne_dir, exist_ok=True)
@@ -64,13 +69,13 @@ def output_folder_hierarchy():
     print("Output folder hierarchy created successfully.")
 
 
-def init_pipeline():
+def init_pipeline(sub_directory):
     """
     Initializes the data preprocessing pipeline.
     """
-    scan_directory()
+    scan_sub_directory(sub_directory)
     decode_pcap_file_name()
-    output_folder_hierarchy()
+    output_folder_hierarchy(sub_directory)
 
 
 def add_offset():
@@ -94,7 +99,7 @@ def add_offset():
     date, time = daytime.strftime("%Y-%m-%d"), daytime.strftime("%H:%M:%S.%f")
 
 
-def write_time_stamp(date, time):
+def write_time_stamp(date, time, sub_directory):
     """
     Write the date and time to a timestamps file.
 
@@ -106,59 +111,70 @@ def write_time_stamp(date, time):
         None
     """
     timestamps = os.path.join(
-        Output_Directory, date, "velodyne_points", "timestamps.txt"
+        Output_Directory, sub_directory, date, "velodyne_points", "timestamps.txt"
     )
     with open(timestamps, "a") as f:
         f.write(f"{date} {time}\n")
 
 
-def process_csv_files():
+def process_csv_files(sub_directory, directory_number):
     """
-    Process CSV files in the Working_Directory and convert them to TXT files.
+    Process CSV files in the sub_directory and convert them to TXT files.
 
-    This function reads each CSV file in the Working_Directory, applies optional data filtering,
+    This function reads each CSV file in the sub_directory, applies optional data filtering,
     converts the columns to a specific format (x y z intensity), and saves the resulting data as TXT files,
     In the output directory. The function also writes the timestamps of the TXT files to a timestamps file.
     Each timestamp is written in the format "YYYY-MM-DD HH:MM:SS.mmmmmm" and represents the time of the
     corresponding TXT file.
 
     Raises:
-        Exception: If no CSV files are found in the Working_Directory.
+        Exception: If no CSV files are found in the sub_directory.
 
     Returns:
         None
     """
-    files = os.listdir(Working_Directory)
+    files = os.listdir(os.path.join(Parent_Directory, sub_directory))
     csv_file_names = [file for file in files if file.endswith(".csv")]
     csv_file_names.sort(key=lambda file: int(file.split(" ")[-1].split(".")[0][:-1]))
     if not csv_file_names:
         raise Exception("CSV files not found")
-    count = 0
-    for csv_file_name in csv_file_names:
-        csv_file_path = os.path.join(Working_Directory, csv_file_name)
+    for count, csv_file_name in enumerate(csv_file_names, start=0):
+        csv_file_path = os.path.join(Parent_Directory, sub_directory, csv_file_name)
         data_frame = pd.read_csv(csv_file_path)
         if csv_file_name != csv_file_names[0]:
             add_offset()
-        write_time_stamp(date, time)
+        write_time_stamp(date, time, sub_directory)
         data_frame = data_frame[
             ["Points_m_XYZ:0", "Points_m_XYZ:1", "Points_m_XYZ:2", "intensity"]
         ]
         data_frame = data_frame.applymap(lambda x: f"{float(x):.8f}")
         count_str = str(count).zfill(6)
         txt_path = os.path.join(
-            Output_Directory, date, "velodyne_points", "data", f"{count_str}.txt"
+            Output_Directory,
+            sub_directory,
+            date,
+            "velodyne_points",
+            "data",
+            f"{count_str}.txt",
         )
         data_frame.to_csv(txt_path, sep=" ", header=False, index=False)
-        count += 1
         if count % 10 == 0:
-            print(f"Processed {count} CSV files.")
+            percentage = (count / len(csv_file_names)) * 100
+            print(
+                f"Processed {percentage:.2f}% of the CSV files in directory {directory_number}."
+            )
     print("Processed CSV files successfully.")
+
+
+def convert_to_kitti_format(sub_directory, directory_number):
+    init_pipeline(sub_directory)
+    process_csv_files(sub_directory, directory_number)
 
 
 def main():
     print("Application started.")
-    init_pipeline()
-    process_csv_files()
+    for directory_number, sub_directory in enumerate(sub_directories, start=1):
+        convert_to_kitti_format(sub_directory, directory_number)
     print("Application finished successfully.")
 
 
