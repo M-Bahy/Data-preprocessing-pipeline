@@ -62,8 +62,8 @@ def output_folder_hierarchy(sub_directory, date):
         pass
     data_dir = os.path.join(velodyne_dir, "data")
     os.makedirs(data_dir, exist_ok=True)
-    # Copy the filter script to the output directory
-    shutil.copy(Filter_script_path, data_dir)
+    if Filter:
+        shutil.copy(Filter_script_path, data_dir)
     print("Output folder hierarchy created successfully.")
 
 
@@ -169,7 +169,7 @@ def filter_the_data(sub_directory, date):
     """
     Filter the data using the CloudComPy library.
     """
-    commands = [f"cd {CloudComPy310_path}" , "conda activate CloudComPy310" , "envCloudComPy.bat" , f"Python {Filter_script_path}"]
+    commands = [f"cd {CloudComPy310_path}" , "conda activate CloudComPy310" , "envCloudComPy.bat" , f"Python {os.path.join(Output_Directory,sub_directory, date, 'velodyne_points', 'data', Script_name)}"]
     for cmd in commands:
         subprocess.run(cmd, shell=True)
     print("Filtered the data successfully.")
