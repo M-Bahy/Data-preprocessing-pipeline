@@ -162,6 +162,7 @@ def process_csv_files(csv_file_names, sub_directory, directory_number, date, tim
             print(
                 f"Processed {percentage:.2f}% of the CSV files in {sub_directory} (directory {directory_number})."
             )
+    print(f"Processed 100% of the CSV files in {sub_directory} (directory {directory_number}).")
     print("Processed CSV files successfully.")
 
 
