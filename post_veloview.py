@@ -169,12 +169,8 @@ def filter_the_data(sub_directory, date):
     """
     Filter the data using the CloudComPy library.
     """
-    commands = [f"cd {CloudComPy310_path}" , "conda activate CloudComPy310" , "envCloudComPy.bat" , f"Python {os.path.join(Output_Directory,sub_directory, date, 'velodyne_points', 'data', Script_name)}"]
-    for cmd in commands:
-        subprocess.run(cmd, shell=True)
+    os.system(f"start cmd /k cd \"{CloudComPy310_path}\" ^&^& conda activate CloudComPy310 ^&^& envCloudComPy.bat ^&^& Python \"{os.path.join(Output_Directory,sub_directory, date, 'velodyne_points', 'data', Script_name)}\" ^&^& exit")
     print("Filtered the data successfully.")
-    # delete the filter script from the output directory
-    os.remove(os.path.join(Output_Directory,sub_directory, date, "velodyne_points", "data", Script_name))
 
 
 def convert_to_kitti_format(sub_directory, directory_number):
