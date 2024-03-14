@@ -1,7 +1,8 @@
 import os
 import pandas as pd
-from datetime import datetime, timedelta
 from dotenv import load_dotenv
+from datetime import datetime, timedelta
+from concurrent.futures import ProcessPoolExecutor
 
 load_dotenv()
 Parent_Directory = os.getenv("Parent_Directory")
@@ -164,8 +165,10 @@ def convert_to_kitti_format(sub_directory, directory_number):
 def main():
     print("Application started.")
     start_time = datetime.now()
-    for directory_number, sub_directory in enumerate(sub_directories, start=1):
-        convert_to_kitti_format(sub_directory, directory_number)
+    with ProcessPoolExecutor() as executor:
+        executor.map(
+            convert_to_kitti_format, sub_directories, range(1, len(sub_directories) + 1)
+        )
     end_time = datetime.now()
     print(f"Time taken to process the data: {end_time - start_time}")
     print("Application finished successfully.")
