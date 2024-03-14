@@ -1,4 +1,5 @@
 import os
+import shutil
 import pandas as pd
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
@@ -7,7 +8,10 @@ from concurrent.futures import ProcessPoolExecutor
 load_dotenv()
 Parent_Directory = os.getenv("Parent_Directory")
 Output_Directory = os.getenv("Output_Directory")
+CloudComPy310_path = os.getenv("CloudComPy310_path")
+Filter_script_path = os.getenv("Filter_script_path")
 offset = 1 / int(os.getenv("FPS")) * 1000000
+Filter = os.getenv("Filter") == "True"
 sub_directories = [
     d
     for d in os.listdir(Parent_Directory)
@@ -56,6 +60,8 @@ def output_folder_hierarchy(sub_directory, date):
         pass
     data_dir = os.path.join(velodyne_dir, "data")
     os.makedirs(data_dir, exist_ok=True)
+    # Copy the filter script to the output directory
+    shutil.copy(Filter_script_path, data_dir)
     print("Output folder hierarchy created successfully.")
 
 
