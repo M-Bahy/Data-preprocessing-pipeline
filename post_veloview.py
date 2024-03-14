@@ -1,5 +1,6 @@
 import os
 import shutil
+import subprocess
 import pandas as pd
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
@@ -10,6 +11,7 @@ Parent_Directory = os.getenv("Parent_Directory")
 Output_Directory = os.getenv("Output_Directory")
 CloudComPy310_path = os.getenv("CloudComPy310_path")
 Filter_script_path = os.getenv("Filter_script_path")
+Script_name = Filter_script_path.split("\\")[-1]
 offset = 1 / int(os.getenv("FPS")) * 1000000
 Filter = os.getenv("Filter") == "True"
 sub_directories = [
@@ -163,9 +165,23 @@ def process_csv_files(csv_file_names, sub_directory, directory_number, date, tim
     print("Processed CSV files successfully.")
 
 
+def filter_the_data(sub_directory, date):
+    """
+    Filter the data using the CloudComPy library.
+    """
+    commands = ["pause"]
+    for cmd in commands:
+        subprocess.run(cmd, shell=True)
+    print("Filtered the data successfully.")
+    # delete the filter script from the output directory
+    os.remove(os.path.join(Output_Directory,sub_directory, date, "velodyne_points", "data", Script_name))
+
+
 def convert_to_kitti_format(sub_directory, directory_number):
     recording_file_name, csv_file_names, date, time = init_pipeline(sub_directory)
     process_csv_files(csv_file_names, sub_directory, directory_number, date, time)
+    if Filter:
+        filter_the_data(sub_directory, date)
 
 
 def main():
