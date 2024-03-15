@@ -244,10 +244,3 @@ def preprocessing(GUI):
     except Exception as e:
         GUI.errorMessage("Error", e)
 
-
-# def safe_execute(GUI):
-#     try:
-#         preprocessing(GUI)
-#     except Exception as e:
-#         return str(e)
-#     return 0

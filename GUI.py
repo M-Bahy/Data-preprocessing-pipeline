@@ -1,4 +1,5 @@
 from PyQt5 import uic
+import os
 from PyQt5.QtWidgets import (
     QApplication,
     QMainWindow,
@@ -11,7 +12,6 @@ from PyQt5.QtWidgets import (
     QProgressBar,
 )
 import sys
-from backend import preprocessing
 
 
 class Home(QMainWindow):
@@ -136,7 +136,27 @@ class Home(QMainWindow):
         ):
             self.errorMessage("Error", "Please fill all the fields")
             return
-
+        try:
+            os.remove(".env")
+        except:
+            pass
+        with open(".env", "w") as file:
+            parent_directory = self.parent_label.text().replace("/", "\\\\")
+            output_directory = self.out_label.text().replace("/", "\\\\")
+            filter_script = self.filter_label.text().replace("/", "\\\\")
+            cloudcompy_path = self.CloudComPy_label.text().replace("/", "\\\\")
+            if cloudcompy_path.split(":")[0] == "D":
+                cloudcompy_path = "/d "+cloudcompy_path
+            file.write(f'Parent_Directory="{parent_directory}"\n')
+            file.write(f'CloudComPy310_path="{cloudcompy_path}"\n')
+            file.write(f'Filter_script_path="{filter_script}"\n')
+            file.write(f'Output_Directory="{output_directory}"\n')
+            file.write(f'Filter={self.checkBox.isChecked()}\n')
+            file.write(f'FPS={self.frames.value()}')
+            
+        # DO NOT MOVE THIS IMPORT TO THE TOP OF THE FILE OR ELSE YOU WILL DIE . YOU HAVE BEEN WARNED
+        from backend import preprocessing
+        # DO NOT MOVE THIS IMPORT TO THE TOP OF THE FILE OR ELSE YOU WILL DIE . YOU HAVE BEEN WARNED
         preprocessing(self)
 
 
