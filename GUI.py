@@ -9,7 +9,6 @@ from PyQt5.QtWidgets import (
     QMessageBox,
     QCheckBox,
     QSpinBox,
-    QProgressBar,
 )
 import sys
 
