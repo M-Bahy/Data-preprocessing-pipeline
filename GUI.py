@@ -13,6 +13,7 @@ from PyQt5.QtWidgets import (
 import sys
 from backend import preprocessing
 
+
 class Home(QMainWindow):
     def __init__(self) -> None:
         """

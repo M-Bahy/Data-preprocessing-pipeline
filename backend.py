@@ -12,11 +12,7 @@ Script_name = ""
 offset = ""
 Filter = ""
 GUI = ""
-sub_directories = [
-    d
-    for d in os.listdir(Parent_Directory)
-    if os.path.isdir(os.path.join(Parent_Directory, d))
-]
+sub_directories = ""
 
 
 def scan_sub_directory(sub_directory):
@@ -25,15 +21,20 @@ def scan_sub_directory(sub_directory):
     Raises:
         Exception: If no CSV files are found in the directory.
     """
-    files = os.listdir(os.path.join(Parent_Directory, sub_directory))
-    csv_file_names = [file for file in files if file.endswith(".csv")]
-    if not csv_file_names:
-        raise Exception("CSV files not found")
-    recording_file_name = csv_file_names[0].split(" ")[0]
-    print("Scanned directory successfully")
-    print(f"Recording file name: {recording_file_name}")
-    print(f"CSV files found: {len(csv_file_names)} files")
-    return recording_file_name, csv_file_names
+    try:
+        files = os.listdir(os.path.join(Parent_Directory, sub_directory))
+        csv_file_names = [file for file in files if file.endswith(".csv")]
+        if not csv_file_names:
+            print("Parent Directory: ", Parent_Directory)
+            print("Sub Directory: ", sub_directory)
+            raise Exception("CSV files not found")
+        recording_file_name = csv_file_names[0].split(" ")[0]
+        print("Scanned directory successfully")
+        print(f"Recording file name: {recording_file_name}")
+        print(f"CSV files found: {len(csv_file_names)} files")
+        return recording_file_name, csv_file_names
+    except Exception as e:
+        print("An error occurred while scanning the directory:", e)
 
 
 def decode_recording_file_name(recording_file_name):
@@ -131,6 +132,8 @@ def process_csv_files(csv_file_names, sub_directory, directory_number, date, tim
         None
     """
     files = os.listdir(os.path.join(Parent_Directory, sub_directory))
+    print("Parent Directory: ", Parent_Directory)
+    print("Sub Directory: ", sub_directory)
     csv_file_names = [file for file in files if file.endswith(".csv")]
     csv_file_names.sort(key=lambda file: int(file.split(" ")[-1].split(".")[0][:-1]))
     if not csv_file_names:
@@ -160,7 +163,9 @@ def process_csv_files(csv_file_names, sub_directory, directory_number, date, tim
             print(
                 f"Processed {percentage:.2f}% of the CSV files in {sub_directory} (directory {directory_number})."
             )
-    print(f"Processed 100% of the CSV files in {sub_directory} (directory {directory_number}).")
+    print(
+        f"Processed 100% of the CSV files in {sub_directory} (directory {directory_number})."
+    )
     print("Processed CSV files successfully.")
 
 
@@ -168,7 +173,9 @@ def filter_the_data(sub_directory, date):
     """
     Filter the data using the CloudComPy library.
     """
-    os.system(f"start cmd /k cd \"{CloudComPy310_path}\" ^&^& conda activate CloudComPy310 ^&^& envCloudComPy.bat ^&^& Python \"{os.path.join(Output_Directory,sub_directory, date, 'velodyne_points', 'data', Script_name)}\" ^&^& exit")
+    os.system(
+        f"start cmd /k cd \"{CloudComPy310_path}\" ^&^& conda activate CloudComPy310 ^&^& envCloudComPy.bat ^&^& Python \"{os.path.join(Output_Directory,sub_directory, date, 'velodyne_points', 'data', Script_name)}\" ^&^& exit"
+    )
     print("Filtered the data successfully.")
 
 
@@ -180,17 +187,28 @@ def convert_to_kitti_format(sub_directory, directory_number):
 
 
 def preprocessing(pyqt_instance):
-    global GUI,Parent_Directory, Output_Directory, CloudComPy310_path, Filter_script_path,  offset, Filter , Script_name
+    global GUI, Parent_Directory, Output_Directory, CloudComPy310_path, Filter_script_path, offset, Filter, Script_name, sub_directories
     GUI = pyqt_instance
     Parent_Directory = GUI.parent_label.text()
+    Parent_Directory = Parent_Directory.replace("/", "\\")
     CloudComPy310_path = GUI.CloudComPy_label.text()
+    CloudComPy310_path = CloudComPy310_path.replace("/", "\\")
     if CloudComPy310_path.split(":")[0] == "D":
         CloudComPy310_path = "/d " + CloudComPy310_path
     Output_Directory = GUI.out_label.text()
+    Output_Directory = Output_Directory.replace("/", "\\")
     Filter_script_path = GUI.filter_label.text()
+    Filter_script_path = Filter_script_path.replace("/", "\\")
     offset = 1 / int(GUI.frames.text()) * 1000000
     Filter = GUI.checkBox.isChecked()
     Script_name = Filter_script_path.split("\\")[-1]
+    sub_directories = [
+        d
+        for d in os.listdir(Parent_Directory)
+        if os.path.isdir(os.path.join(Parent_Directory, d))
+    ]
+    print("The parent directory is: ", Parent_Directory)
+
     print("Application started.")
     start_time = datetime.now()
     with ProcessPoolExecutor() as executor:
@@ -200,4 +218,3 @@ def preprocessing(pyqt_instance):
     end_time = datetime.now()
     print(f"Time taken to process the data: {end_time - start_time}")
     print("Application finished successfully.")
-
