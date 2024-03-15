@@ -200,7 +200,7 @@ def filter_the_data(sub_directory, date):
     """
     try:
         os.system(
-            f"start cmd /k cd \"{CloudComPy310_path}\" ^&^& conda activate CloudComPy310 ^&^& envCloudComPy.bat ^&^& Python \"{os.path.join(Output_Directory,sub_directory, date, 'velodyne_points', 'data', Script_name)}\" ^&^& exit"
+            f"cmd /k cd \"{CloudComPy310_path}\" ^&^& conda activate CloudComPy310 ^&^& envCloudComPy.bat ^&^& Python \"{os.path.join(Output_Directory,sub_directory, date, 'velodyne_points', 'data', Script_name)}\" ^&^& exit"
         )
         return 0
     except Exception as e:
