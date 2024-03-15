@@ -202,7 +202,7 @@ def filter_the_data(sub_directory, date):
         os.system(
             f"start cmd /k cd \"{CloudComPy310_path}\" ^&^& conda activate CloudComPy310 ^&^& envCloudComPy.bat ^&^& Python \"{os.path.join(Output_Directory,sub_directory, date, 'velodyne_points', 'data', Script_name)}\" ^&^& exit"
         )
-        print("Filtered the data successfully.")
+        return 0
     except Exception as e:
         raise Exception("An error occurred while filtering the data:", e)
 
@@ -212,7 +212,7 @@ def convert_to_kitti_format(sub_directory, directory_number):
         recording_file_name, csv_file_names, date, time = init_pipeline(sub_directory)
         process_csv_files(csv_file_names, sub_directory, directory_number, date, time)
         if Filter:
-            filter_the_data(sub_directory, date)
+         return  filter_the_data(sub_directory, date)
         return 0
     except Exception as e:
         return str(e)
@@ -220,9 +220,6 @@ def convert_to_kitti_format(sub_directory, directory_number):
 
 def preprocessing(GUI):
     try:
-        # print("The parent directory is: ", Parent_Directory)
-
-        # print("Application started.")
         start_time = datetime.now()
         with ProcessPoolExecutor() as executor:
             results = executor.map(
@@ -231,17 +228,19 @@ def preprocessing(GUI):
                 range(1, len(sub_directories) + 1),
             )
 
-        # Convert the results to a list
         results = list(results)
-        end_time = datetime.now()
-        print("THE RESULTS ARE: ", results)
+        success = True
         for result in results:
             if result != 0:
                 GUI.errorMessage("Error", result)
                 print("An error occurred while processing the data.")
+                success = False
                 print(result)
-        # print(f"Time taken to process the data: {end_time - start_time}")
-        # print("Application finished successfully.")
+        if success:
+            GUI.infoMessage(
+                "Done",
+                f"Application finished successfully in {datetime.now() - start_time}",
+            )
     except Exception as e:
         GUI.errorMessage("Error", e)
 
