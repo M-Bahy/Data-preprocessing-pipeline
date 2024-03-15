@@ -6,3 +6,4 @@ tmp*.py
 config.ini
 output.txt
 filtering test.py
+Useless stuff/*
