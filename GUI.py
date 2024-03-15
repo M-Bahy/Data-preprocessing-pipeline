@@ -21,7 +21,7 @@ class Home(QMainWindow):
 
         """
         super(Home, self).__init__()
-        uic.loadUi("./GUI.ui", self)
+        uic.loadUi("./Utilities/GUI.ui", self)
 
         self.parent_directory = self.findChild(QPushButton, "Parent_Directory")
         self.CloudComPy_directory = self.findChild(QPushButton, "CloudComPy310_path")
