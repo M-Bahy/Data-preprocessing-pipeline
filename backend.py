@@ -1,19 +1,17 @@
 import os
 import shutil
-import subprocess
 import pandas as pd
-from dotenv import load_dotenv
 from datetime import datetime, timedelta
 from concurrent.futures import ProcessPoolExecutor
 
-load_dotenv()
-Parent_Directory = os.getenv("Parent_Directory")
-Output_Directory = os.getenv("Output_Directory")
-CloudComPy310_path = os.getenv("CloudComPy310_path")
-Filter_script_path = os.getenv("Filter_script_path")
-Script_name = Filter_script_path.split("\\")[-1]
-offset = 1 / int(os.getenv("FPS")) * 1000000
-Filter = os.getenv("Filter") == "True"
+Parent_Directory = ""
+Output_Directory = ""
+CloudComPy310_path = ""
+Filter_script_path = ""
+Script_name = ""
+offset = ""
+Filter = ""
+GUI = ""
 sub_directories = [
     d
     for d in os.listdir(Parent_Directory)
@@ -181,16 +179,20 @@ def convert_to_kitti_format(sub_directory, directory_number):
         filter_the_data(sub_directory, date)
 
 
-def preprocessing(params):
-    global Parent_Directory, Output_Directory, CloudComPy310_path, Filter_script_path,  offset, Filter
+def preprocessing(pyqt_instance):
+    global GUI,Parent_Directory, Output_Directory, CloudComPy310_path, Filter_script_path,  offset, Filter , Script_name
+    GUI = pyqt_instance
+    Parent_Directory = GUI.parent_label.text()
+    CloudComPy310_path = GUI.CloudComPy_label.text()
+    if CloudComPy310_path.split(":")[0] == "D":
+        CloudComPy310_path = "/d " + CloudComPy310_path
+    Output_Directory = GUI.out_label.text()
+    Filter_script_path = GUI.filter_label.text()
+    offset = 1 / int(GUI.frames.text()) * 1000000
+    Filter = GUI.checkBox.isChecked()
+    Script_name = Filter_script_path.split("\\")[-1]
     print("Application started.")
     start_time = datetime.now()
-    Parent_Directory = params["Parent_Directory"]
-    Output_Directory = params["Output_Directory"]
-    CloudComPy310_path = params["CloudComPy310_path"]
-    Filter_script_path = params["Filter_script_path"]
-    offset = 1 / int(params["FPS"]) * 1000000
-    Filter = params["Filter"] == "True"
     with ProcessPoolExecutor() as executor:
         executor.map(
             convert_to_kitti_format, sub_directories, range(1, len(sub_directories) + 1)

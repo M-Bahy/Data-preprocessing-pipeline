@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import (
     QProgressBar,
 )
 import sys
-
+from backend import preprocessing
 
 class Home(QMainWindow):
     def __init__(self) -> None:
@@ -135,7 +135,7 @@ class Home(QMainWindow):
         ):
             self.errorMessage("Error", "Please fill all the fields")
             return
-        print(self.checkBox.isChecked())
+        preprocessing(self)
 
 
 def main():

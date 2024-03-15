@@ -8,3 +8,4 @@ output.txt
 filtering test.py
 Useless stuff/*
 GUI.ui~*
+__pycache__/*
