@@ -46,7 +46,6 @@ class Home(QMainWindow):
         self.start.clicked.connect(self.run)
         self.parent_label = self.findChild(QLabel, "parent_label")
         self.CloudComPy_label = self.findChild(QLabel, "CloudComPy_label")
-
         self.filter_label = self.findChild(QLabel, "filter_label")
         self.out_label = self.findChild(QLabel, "out_label")
 
@@ -96,7 +95,7 @@ class Home(QMainWindow):
         path = QFileDialog.getOpenFileName(
             self,
             "Open file",
-            "D:\\CMS\\Bachelor\\Softwares\\CloudComparePYBinaries\\CloudComPy310\\test.py",
+            "D:\\CMS\\Bachelor\\Softwares\\CloudComparePYBinaries\\CloudComPy310\\filter.py",
             "Python files (*.py)",
         )
         if path[0] == "":
@@ -133,9 +132,11 @@ class Home(QMainWindow):
             or self.CloudComPy_label.text() == ""
             or self.filter_label.text() == ""
             or self.out_label.text() == ""
+            or self.frames.value() == 0
         ):
             self.errorMessage("Error", "Please fill all the fields")
             return
+        print(self.checkBox.isChecked())
 
 
 def main():

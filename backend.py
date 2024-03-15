@@ -181,9 +181,16 @@ def convert_to_kitti_format(sub_directory, directory_number):
         filter_the_data(sub_directory, date)
 
 
-def main():
+def preprocessing(params):
+    global Parent_Directory, Output_Directory, CloudComPy310_path, Filter_script_path,  offset, Filter
     print("Application started.")
     start_time = datetime.now()
+    Parent_Directory = params["Parent_Directory"]
+    Output_Directory = params["Output_Directory"]
+    CloudComPy310_path = params["CloudComPy310_path"]
+    Filter_script_path = params["Filter_script_path"]
+    offset = 1 / int(params["FPS"]) * 1000000
+    Filter = params["Filter"] == "True"
     with ProcessPoolExecutor() as executor:
         executor.map(
             convert_to_kitti_format, sub_directories, range(1, len(sub_directories) + 1)
@@ -192,6 +199,3 @@ def main():
     print(f"Time taken to process the data: {end_time - start_time}")
     print("Application finished successfully.")
 
-
-if __name__ == "__main__":
-    main()
