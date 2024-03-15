@@ -150,6 +150,10 @@ class Home(QMainWindow):
         from backend import preprocessing
         # DO NOT MOVE THIS IMPORT TO THE TOP OF THE FILE OR ELSE YOU WILL DIE . YOU HAVE BEEN WARNED
         preprocessing(self)
+        try:
+            os.remove(".env")
+        except:
+            pass
 
 
 def main():
