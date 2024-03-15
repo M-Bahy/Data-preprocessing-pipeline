@@ -132,7 +132,6 @@ class Home(QMainWindow):
             or self.CloudComPy_label.text() == ""
             or self.filter_label.text() == ""
             or self.out_label.text() == ""
-            or self.frames.value() == 0
         ):
             self.errorMessage("Error", "Please fill all the fields")
             return
