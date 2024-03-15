@@ -1,18 +1,23 @@
 import os
 import shutil
 import pandas as pd
+from dotenv import load_dotenv
 from datetime import datetime, timedelta
 from concurrent.futures import ProcessPoolExecutor
 
-Parent_Directory = ""
-Output_Directory = ""
-CloudComPy310_path = ""
-Filter_script_path = ""
-Script_name = ""
-offset = ""
-Filter = ""
-GUI = ""
-sub_directories = ""
+load_dotenv()
+Parent_Directory = os.getenv("Parent_Directory")
+Output_Directory = os.getenv("Output_Directory")
+CloudComPy310_path = os.getenv("CloudComPy310_path")
+Filter_script_path = os.getenv("Filter_script_path")
+Script_name = Filter_script_path.split("\\")[-1]
+offset = 1 / int(os.getenv("FPS")) * 1000000
+Filter = os.getenv("Filter") == "True"
+sub_directories = [
+    d
+    for d in os.listdir(Parent_Directory)
+    if os.path.isdir(os.path.join(Parent_Directory, d))
+]
 
 
 def scan_sub_directory(sub_directory):
@@ -34,46 +39,55 @@ def scan_sub_directory(sub_directory):
         print(f"CSV files found: {len(csv_file_names)} files")
         return recording_file_name, csv_file_names
     except Exception as e:
-        print("An error occurred while scanning the directory:", e)
+        raise Exception("An error occurred while scanning the sub-directory:", e)
 
 
 def decode_recording_file_name(recording_file_name):
     """
     Extracts the data from the recording file name.
     """
-    datetime = recording_file_name.split("_")[0]
-    date = f"{datetime[:4]}-{datetime[5:7]}-{datetime[8:10]}"
-    time = f"{datetime[11:13]}:{datetime[14:16]}:{datetime[17:19]}.000000"
-    print("Decoded recording file name successfully")
-    return date, time
+    try:
+        datetime = recording_file_name.split("_")[0]
+        date = f"{datetime[:4]}-{datetime[5:7]}-{datetime[8:10]}"
+        time = f"{datetime[11:13]}:{datetime[14:16]}:{datetime[17:19]}.000000"
+        print("Decoded recording file name successfully")
+        return date, time
+    except Exception as e:
+        raise Exception("An error occurred while decoding the recording file name:", e)
 
 
 def output_folder_hierarchy(sub_directory, date):
     """
     Creates a folder hierarchy for storing output files.
     """
-    output_dir = os.path.join(Output_Directory, sub_directory, date)
-    os.makedirs(output_dir, exist_ok=True)
-    velodyne_dir = os.path.join(output_dir, "velodyne_points")
-    os.makedirs(velodyne_dir, exist_ok=True)
-    timestamps = os.path.join(velodyne_dir, "timestamps.txt")
-    with open(timestamps, "w") as f:
-        pass
-    data_dir = os.path.join(velodyne_dir, "data")
-    os.makedirs(data_dir, exist_ok=True)
-    if Filter:
-        shutil.copy(Filter_script_path, data_dir)
-    print("Output folder hierarchy created successfully.")
+    try:
+        output_dir = os.path.join(Output_Directory, sub_directory, date)
+        os.makedirs(output_dir, exist_ok=True)
+        velodyne_dir = os.path.join(output_dir, "velodyne_points")
+        os.makedirs(velodyne_dir, exist_ok=True)
+        timestamps = os.path.join(velodyne_dir, "timestamps.txt")
+        with open(timestamps, "w") as f:
+            pass
+        data_dir = os.path.join(velodyne_dir, "data")
+        os.makedirs(data_dir, exist_ok=True)
+        if Filter:
+            shutil.copy(Filter_script_path, data_dir)
+        print("Output folder hierarchy created successfully.")
+    except Exception as e:
+        raise Exception("An error occurred while creating the output folder hierarchy:", e)
 
 
 def init_pipeline(sub_directory):
     """
     Initializes the data preprocessing pipeline.
     """
-    recording_file_name, csv_file_names = scan_sub_directory(sub_directory)
-    date, time = decode_recording_file_name(recording_file_name)
-    output_folder_hierarchy(sub_directory, date)
-    return recording_file_name, csv_file_names, date, time
+    try:
+        recording_file_name, csv_file_names = scan_sub_directory(sub_directory)
+        date, time = decode_recording_file_name(recording_file_name)
+        output_folder_hierarchy(sub_directory, date)
+        return recording_file_name, csv_file_names, date, time
+    except Exception as e:
+        raise Exception("An error occurred while initializing the pipeline:", e)
 
 
 def add_offset(date, time):
@@ -90,11 +104,14 @@ def add_offset(date, time):
     Returns:
         None
     """
-    daytime = datetime.strptime(date + " " + time, "%Y-%m-%d %H:%M:%S.%f")
-    offset_seconds = offset / 1e6
-    daytime += timedelta(seconds=offset_seconds)
-    date, time = daytime.strftime("%Y-%m-%d"), daytime.strftime("%H:%M:%S.%f")
-    return date, time
+    try:
+        daytime = datetime.strptime(date + " " + time, "%Y-%m-%d %H:%M:%S.%f")
+        offset_seconds = offset / 1e6
+        daytime += timedelta(seconds=offset_seconds)
+        date, time = daytime.strftime("%Y-%m-%d"), daytime.strftime("%H:%M:%S.%f")
+        return date, time
+    except Exception as e:
+        raise Exception("An error occurred while adding the offset:", e)
 
 
 def write_time_stamp(date, time, sub_directory):
@@ -108,11 +125,14 @@ def write_time_stamp(date, time, sub_directory):
     Returns:
         None
     """
-    timestamps = os.path.join(
-        Output_Directory, sub_directory, date, "velodyne_points", "timestamps.txt"
-    )
-    with open(timestamps, "a") as f:
-        f.write(f"{date} {time}\n")
+    try:
+        timestamps = os.path.join(
+            Output_Directory, sub_directory, date, "velodyne_points", "timestamps.txt"
+        )
+        with open(timestamps, "a") as f:
+            f.write(f"{date} {time}\n")
+    except Exception as e:
+        raise Exception("An error occurred while writing the timestamp:", e)
 
 
 def process_csv_files(csv_file_names, sub_directory, directory_number, date, time):
@@ -131,90 +151,104 @@ def process_csv_files(csv_file_names, sub_directory, directory_number, date, tim
     Returns:
         None
     """
-    files = os.listdir(os.path.join(Parent_Directory, sub_directory))
-    print("Parent Directory: ", Parent_Directory)
-    print("Sub Directory: ", sub_directory)
-    csv_file_names = [file for file in files if file.endswith(".csv")]
-    csv_file_names.sort(key=lambda file: int(file.split(" ")[-1].split(".")[0][:-1]))
-    if not csv_file_names:
-        raise Exception("CSV files not found")
-    for count, csv_file_name in enumerate(csv_file_names, start=0):
-        csv_file_path = os.path.join(Parent_Directory, sub_directory, csv_file_name)
-        data_frame = pd.read_csv(csv_file_path)
-        if csv_file_name != csv_file_names[0]:
-            add_offset(date, time)
-        write_time_stamp(date, time, sub_directory)
-        data_frame = data_frame[
-            ["Points_m_XYZ:0", "Points_m_XYZ:1", "Points_m_XYZ:2", "intensity"]
-        ]
-        data_frame = data_frame.applymap(lambda x: f"{float(x):.8f}")
-        count_str = str(count).zfill(6)
-        txt_path = os.path.join(
-            Output_Directory,
-            sub_directory,
-            date,
-            "velodyne_points",
-            "data",
-            f"{count_str}.txt",
+    try:
+        files = os.listdir(os.path.join(Parent_Directory, sub_directory))
+        print("Parent Directory: ", Parent_Directory)
+        print("Sub Directory: ", sub_directory)
+        csv_file_names = [file for file in files if file.endswith(".csv")]
+        csv_file_names.sort(
+            key=lambda file: int(file.split(" ")[-1].split(".")[0][:-1])
         )
-        data_frame.to_csv(txt_path, sep=" ", header=False, index=False)
-        if count % 10 == 0:
-            percentage = (count / len(csv_file_names)) * 100
-            print(
-                f"Processed {percentage:.2f}% of the CSV files in {sub_directory} (directory {directory_number})."
+        if not csv_file_names:
+            raise Exception("CSV files not found")
+        for count, csv_file_name in enumerate(csv_file_names, start=0):
+            csv_file_path = os.path.join(Parent_Directory, sub_directory, csv_file_name)
+            data_frame = pd.read_csv(csv_file_path)
+            if csv_file_name != csv_file_names[0]:
+                add_offset(date, time)
+            write_time_stamp(date, time, sub_directory)
+            data_frame = data_frame[
+                ["Points_m_XYZ:0", "Points_m_XYZ:1", "Points_m_XYZ:2", "intensity"]
+            ]
+            data_frame = data_frame.applymap(lambda x: f"{float(x):.8f}")
+            count_str = str(count).zfill(6)
+            txt_path = os.path.join(
+                Output_Directory,
+                sub_directory,
+                date,
+                "velodyne_points",
+                "data",
+                f"{count_str}.txt",
             )
-    print(
-        f"Processed 100% of the CSV files in {sub_directory} (directory {directory_number})."
-    )
-    print("Processed CSV files successfully.")
+            data_frame.to_csv(txt_path, sep=" ", header=False, index=False)
+            if count % 10 == 0:
+                percentage = (count / len(csv_file_names)) * 100
+                print(
+                    f"Processed {percentage:.2f}% of the CSV files in {sub_directory} (directory {directory_number})."
+                )
+        print(
+            f"Processed 100% of the CSV files in {sub_directory} (directory {directory_number})."
+        )
+        print("Processed CSV files successfully.")
+    except Exception as e:
+        raise Exception("An error occurred while processing the CSV files:", e)
 
 
 def filter_the_data(sub_directory, date):
     """
     Filter the data using the CloudComPy library.
     """
-    os.system(
-        f"start cmd /k cd \"{CloudComPy310_path}\" ^&^& conda activate CloudComPy310 ^&^& envCloudComPy.bat ^&^& Python \"{os.path.join(Output_Directory,sub_directory, date, 'velodyne_points', 'data', Script_name)}\" ^&^& exit"
-    )
-    print("Filtered the data successfully.")
+    try:
+        os.system(
+            f"start cmd /k cd \"{CloudComPy310_path}\" ^&^& conda activate CloudComPy310 ^&^& envCloudComPy.bat ^&^& Python \"{os.path.join(Output_Directory,sub_directory, date, 'velodyne_points', 'data', Script_name)}\" ^&^& exit"
+        )
+        print("Filtered the data successfully.")
+    except Exception as e:
+        raise Exception("An error occurred while filtering the data:", e)
 
 
 def convert_to_kitti_format(sub_directory, directory_number):
-    recording_file_name, csv_file_names, date, time = init_pipeline(sub_directory)
-    process_csv_files(csv_file_names, sub_directory, directory_number, date, time)
-    if Filter:
-        filter_the_data(sub_directory, date)
+    try:
+        recording_file_name, csv_file_names, date, time = init_pipeline(sub_directory)
+        process_csv_files(csv_file_names, sub_directory, directory_number, date, time)
+        if Filter:
+            filter_the_data(sub_directory, date)
+        return 0
+    except Exception as e:
+        return str(e)
 
 
-def preprocessing(pyqt_instance):
-    global GUI, Parent_Directory, Output_Directory, CloudComPy310_path, Filter_script_path, offset, Filter, Script_name, sub_directories
-    GUI = pyqt_instance
-    Parent_Directory = GUI.parent_label.text()
-    Parent_Directory = Parent_Directory.replace("/", "\\")
-    CloudComPy310_path = GUI.CloudComPy_label.text()
-    CloudComPy310_path = CloudComPy310_path.replace("/", "\\")
-    if CloudComPy310_path.split(":")[0] == "D":
-        CloudComPy310_path = "/d " + CloudComPy310_path
-    Output_Directory = GUI.out_label.text()
-    Output_Directory = Output_Directory.replace("/", "\\")
-    Filter_script_path = GUI.filter_label.text()
-    Filter_script_path = Filter_script_path.replace("/", "\\")
-    offset = 1 / int(GUI.frames.text()) * 1000000
-    Filter = GUI.checkBox.isChecked()
-    Script_name = Filter_script_path.split("\\")[-1]
-    sub_directories = [
-        d
-        for d in os.listdir(Parent_Directory)
-        if os.path.isdir(os.path.join(Parent_Directory, d))
-    ]
-    print("The parent directory is: ", Parent_Directory)
+def preprocessing(GUI):
+    try:
+        # print("The parent directory is: ", Parent_Directory)
 
-    print("Application started.")
-    start_time = datetime.now()
-    with ProcessPoolExecutor() as executor:
-        executor.map(
-            convert_to_kitti_format, sub_directories, range(1, len(sub_directories) + 1)
-        )
-    end_time = datetime.now()
-    print(f"Time taken to process the data: {end_time - start_time}")
-    print("Application finished successfully.")
+        # print("Application started.")
+        start_time = datetime.now()
+        with ProcessPoolExecutor() as executor:
+            results = executor.map(
+                convert_to_kitti_format,
+                sub_directories,
+                range(1, len(sub_directories) + 1),
+            )
+
+        # Convert the results to a list
+        results = list(results)
+        end_time = datetime.now()
+        print("THE RESULTS ARE: ", results)
+        for result in results:
+            if result != 0:
+                GUI.errorMessage("Error", result)
+                print("An error occurred while processing the data.")
+                print(result)
+        # print(f"Time taken to process the data: {end_time - start_time}")
+        # print("Application finished successfully.")
+    except Exception as e:
+        GUI.errorMessage("Error", e)
+
+
+# def safe_execute(GUI):
+#     try:
+#         preprocessing(GUI)
+#     except Exception as e:
+#         return str(e)
+#     return 0

@@ -136,6 +136,7 @@ class Home(QMainWindow):
         ):
             self.errorMessage("Error", "Please fill all the fields")
             return
+
         preprocessing(self)
 
 
