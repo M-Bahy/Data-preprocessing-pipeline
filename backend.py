@@ -198,6 +198,8 @@ def filter_the_data(sub_directory, date):
     """
     Filter the data using the CloudComPy library.
     """
+    print("It is recommended to close all other applications as the filtering process is cpu intensive.")
+    print("Don't touch the app and don't worry if it's not responding, it's working on the background. It will take a while.")
     try:
         os.system(
             f"cmd /k cd \"{CloudComPy310_path}\" ^&^& conda activate CloudComPy310 ^&^& envCloudComPy.bat ^&^& Python \"{os.path.join(Output_Directory,sub_directory, date, 'velodyne_points', 'data', Script_name)}\" ^&^& exit"
