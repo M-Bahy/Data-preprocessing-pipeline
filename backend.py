@@ -39,7 +39,7 @@ def scan_sub_directory(sub_directory):
         print(f"CSV files found: {len(csv_file_names)} files")
         return recording_file_name, csv_file_names
     except Exception as e:
-        raise Exception("An error occurred while scanning the sub-directory:", e)
+        raise Exception(f"An error occurred while scanning the sub-directory {sub_directory} :", e)
 
 
 def decode_recording_file_name(recording_file_name):
