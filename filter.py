@@ -1,4 +1,4 @@
-import cloudComPy as cc  # import the CloudComPy module
+import cloudComPy as cc  # Must be in conda environment with cloudComPy installed to run this script
 import os
 
 """
