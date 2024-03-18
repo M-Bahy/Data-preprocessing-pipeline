@@ -8,9 +8,17 @@ The script takes a directory containing n sub-directories containing CSVs of poi
 ```
 pip install -r requirements.txt
 ```
-[CloudCompare](https://www.danielgm.net/cc/)
+[CloudCompare](https://www.danielgm.net/cc/) <br/>
 [Veloview](https://www.paraview.org/veloview/#download)
 <h3 align="center">CloudComPy</h3>
+<p align="center">
+  <img src="https://res.cloudinary.com/canonical/image/fetch/f_auto,q_auto,fl_sanitize,w_60,h_60/https://dashboard.snapcraft.io/site_media/appmedia/2017/02/icon_19.png" width="200" height="200" />
+</p>
+<h3 align="center">Veloview</h3>
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Kitware/VeloView/master/Application/Icons/logo.png" width="200" height="200" />
+</p>
+
 
 ## Installation
 
