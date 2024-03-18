@@ -1,7 +1,16 @@
 # Data Preprocessing Pipeline
 
 Part of the Sensor Calibration and Data Collection Pipeline Bachelor Thesis Project 24' at the GUC under the supervision of Dr. Eng. Catherine M. Elias. <br/>
-The script takes a directory containing n sub-directories containing CSVs of point cloud frames recorded with Velodyne's lidars and outputs the data in KITTI format then apply SOR filter on all the frames.
+The script takes a directory containing n sub-directories containing CSVs of point cloud frames recorded with Velodyne's lidars and outputs the data in KITTI format and apply SOR filter on all the frames.
+
+## Requirements
+
+```
+pip install -r requirements.txt
+```
+[CloudCompare](https://www.danielgm.net/cc/)
+[Veloview](https://www.paraview.org/veloview/#download)
+<h3 align="center">CloudComPy</h3>
 
 ## Installation
 
