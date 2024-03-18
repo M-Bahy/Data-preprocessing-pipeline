@@ -216,6 +216,8 @@ Output_Directory
 ```
 6. Set the recording FPS.
 7. Choose whether to apply the SOR filter or not.
+8. Click on `Start` to start the process. Don't touch the window until the process is finished. It will take a while depending on your data size and your CPU. It is recommended to close all other applications as the process is CPU intensive.
+It will display a message box when the process is finished.
 
 ## Contributing
 
