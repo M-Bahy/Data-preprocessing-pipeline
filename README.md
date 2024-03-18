@@ -59,12 +59,106 @@ Install the binary in the directory of your choice.
 <details>
     <summary>Linux</summary>
     
-    This is the content inside the collapsible section. You can put anything you want here, including Markdown or HTML code.
+Installing, testing and using a CloudComPy binary on Linux, with conda
+
+The binary *CloudComPy_Conda310_Linux64_-date-.tgz* available [here](https://www.simulation.openfields.fr/index.php/cloudcompy-downloads) is built with a Conda environment
+(see [here](BuildLinuxConda.md) for the corresponding building instructions).
+
+As CloudComPy is under development, these instructions and the link are subject to change from time to time...
+
+**This binary works only on Linux 64, on recent distributions, and with a Conda environment as described below, not anywhere else!**
+
+**Only tested un Ubuntu 20.04 (focal) and Debian 11 (bullseye), please report any problems on other distributions.**
+
+GLIBC version should be 2.29 or more. To know your version of GLIBC:
+
+```
+ldd --version
+```
+
+You need a recent installation of Anaconda3 or miniconda3.
+
+You need to create an environment for CloudComPy with conda, from the terminal
+(here, I chose to activate conda environment on demand: please adapt the instructions to your installation):
+
+```
+conda activate
+conda update -y -n base -c defaults conda
+```
+If your environment CloudComPy310 does not exist:
+```
+conda create --name CloudComPy310 python=3.10
+   # --- erase previous env with the same name if existing
+```
+Add or update the packages:
+```
+conda activate CloudComPy310
+conda config --add channels conda-forge
+conda config --set channel_priority strict
+conda install "boost=1.74" "cgal=5.4" cmake draco ffmpeg "gdal=3.5" jupyterlab laszip "matplotlib=3.5" "mysql=8.0" "numpy=1.22" "opencv=4.5" "openmp=8.0" "pcl=1.12" "pdal=2.4" "psutil=5.9" pybind11 "qhull=2020.2" "qt=5.15.4" "scipy=1.8" sphinx_rtd_theme spyder tbb tbb-devel "xerces-c=3.2"
+```
+
+**Remark:** if conda is unknown, or in a bash script, add the following instruction before conda commands:
+
+```
+. <conda_dir>/etc/profile.d/conda.sh
+```
+where `<conda_dir>` is the installation directory of conda (often `~/anaconda3` or `~/miniconda3`)
+
+Install the binary in the directory of your choice.
 </details>
 <details>
     <summary>Mac</summary>
     
-    This is the content inside the collapsible section. You can put anything you want here, including Markdown or HTML code.
+Experimental: Installing, testing and using a CloudComPy binary on MacOS, with conda
+
+The binary *CloudComPy_Conda310_MacOS-date-.zip* available [here](https://www.simulation.openfields.fr/index.php/cloudcompy-downloads)
+ is built with a Conda environment.
+
+**This binary works only on macOS Apple arm architecture (not on Intel processors), on recent macOS versions, not anywhere else!**
+
+**Built and tested on macOS VENTURA 13.4.1. Please post issues on CloudComPy GitHub in case of problem**
+
+The macOS binary provides **CloudCompare** and **CloudCompy** (same as binaries for Windows and Linux).
+
+As CloudComPy is under development, these instructions and the link are subject to change from time to time...
+
+**CloudCompare** works as it is (no specific environment).
+It is located in CloudComPy310/CloudCompare/CloudCompare.app and can be launched from the Finder.
+
+**CloudComPy** needs a Python 3.10 configuration with at least the following packages, either with conda or not:
+
+```
+numpy
+scipy
+requests
+psutils
+matplotlib
+```
+
+You can create an environment for CloudComPy with conda, from the terminal
+(here, I chose to activate conda environment on demand: please adapt the instructions to your installation)
+The following package list corresponds to the building environment, but you can adjust the list
+(at least the above list):
+
+```
+conda activate
+conda update -y -n base -c defaults conda
+```
+If your environment CloudComPy310 does not exist:
+```
+conda create --name CloudComPy310 python=3.10
+   # --- erase previous env with the same name if existing
+```
+Add or update the packages:
+```
+conda activate CloudComPy310
+conda config --add channels conda-forge
+conda config --set channel_priority strict
+conda install "boost" "cgal" cmake draco ffmpeg "gdal" jupyterlab laszip "matplotlib" "mysql=8.0" "numpy" "opencv" "openssl=3.0.8" "pcl" "pdal" "psutil" pybind11 "qhull=2020.2" "qt=5.15.8" "scipy" sphinx_rtd_theme spyder tbb tbb-devel "xerces-c=3.2" xorg-libx11 || error_exit "conda environment ${CONDA_ENV} cannot be completed"
+```
+
+Unzip the binary tarfile in the directory of your choice.
 </details>
 
 ## Installation
