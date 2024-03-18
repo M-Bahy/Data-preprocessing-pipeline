@@ -20,6 +20,7 @@ class Home(QMainWindow):
 
         """
         super(Home, self).__init__()
+        # Load the UI file
         uic.loadUi("./Utilities/GUI.ui", self)
 
         self.parent_directory = self.findChild(QPushButton, "Parent_Directory")
@@ -44,13 +45,21 @@ class Home(QMainWindow):
         self.show()
 
     def directory_path(self):
+        """
+        Opens a file dialog to select a directory based on the button clicked.
+
+        If no directory is selected, it displays an error message and clears the corresponding label.
+
+        Returns:
+            None
+        """
         button = self.sender()
         button_name = button.text()
 
         if button_name == "Parent Directory":
             path = QFileDialog.getExistingDirectory(
                 self,
-                "Open file",
+                "Select the parent directory that contains the subdirectories of the CSV files",
                 "D:\\CMS\\Bachelor\\Softwares\\VeloView\\records\\Test parent style",
             )
             if path == "":
@@ -61,7 +70,7 @@ class Home(QMainWindow):
         elif button_name == "CloudComPy310":
             path = QFileDialog.getExistingDirectory(
                 self,
-                "Open file",
+                "Select the directory that contains the CloudComparePY310 binaries",
                 "D:\\CMS\\Bachelor\\Softwares\\CloudComparePYBinaries\\CloudComPy310",
             )
             if path == "":
@@ -72,7 +81,7 @@ class Home(QMainWindow):
         elif button_name == "Output Directory":
             path = QFileDialog.getExistingDirectory(
                 self,
-                "Open file",
+                "Select the directory where the output txt files will be saved",
                 "D:\\CMS\\Bachelor\\Egyptian KITTI Dataset\\Try parent style",
             )
             if path == "":
@@ -82,11 +91,17 @@ class Home(QMainWindow):
             self.out_label.setText(path)
 
     def file_path(self):
+        """
+        Opens a file dialog to select a Python file and sets the selected file path to the filter_label.
+
+        Returns:
+            None
+        """
         button = self.sender()
         button_name = button.text()
         path = QFileDialog.getOpenFileName(
             self,
-            "Open file",
+            "Select the filter script",
             "D:\\CMS\\Bachelor\\Softwares\\CloudComparePYBinaries\\CloudComPy310\\filter.py",
             "Python files (*.py)",
         )
@@ -97,6 +112,16 @@ class Home(QMainWindow):
         self.filter_label.setText(path[0])
 
     def errorMessage(self, title, text):
+        """
+        Display an error message dialog box.
+
+        Parameters:
+        - title (str): The title of the error message box.
+        - text (str): The text to be displayed in the error message box.
+
+        Returns:
+        None
+        """
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Critical)
         msg.setText(text)
@@ -104,6 +129,16 @@ class Home(QMainWindow):
         msg.exec_()
 
     def infoMessage(self, title, text):
+        """
+        Display an information message box.
+
+        Args:
+            title (str): The title of the message box.
+            text (str): The text to be displayed in the message box.
+
+        Returns:
+            None
+        """
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Information)
         msg.setText(text)
@@ -111,14 +146,41 @@ class Home(QMainWindow):
         msg.exec_()
 
     def clear(self):
+        """
+        Clears the labels and checkboxes in the GUI.
+
+        This method sets the text of several labels to an empty string,
+        unchecks a checkbox, and sets the value of a frames variable to 1.
+
+        Parameters:
+        None
+
+        Returns:
+        None
+        """
         self.parent_label.setText("")
         self.CloudComPy_label.setText("")
         self.filter_label.setText("")
         self.out_label.setText("")
         self.checkBox.setChecked(False)
-        self.frames.setValue(0)
+        self.frames.setValue(1)
 
     def run(self):
+        """
+        Runs the data preprocessing pipeline.
+
+        This method checks if all the required fields are filled in the GUI. If any field is empty, it displays an error message and returns.
+        Otherwise, it creates a .env file and writes the necessary configuration parameters to it.
+        Then, it imports the `preprocessing` function from the `backend` module and calls it with the current instance of the GUI.
+        Finally, it removes the .env file.
+
+        Note: The import statement for `preprocessing` should NOT be moved to the top of the file.
+              This is because the backend file sets global variables from the .env file,
+              and if the import statement is moved to the top, the global variables will be set before the .env file is created.
+
+        Returns:
+            None
+        """
         if (
             self.parent_label.text() == ""
             or self.CloudComPy_label.text() == ""
@@ -137,16 +199,18 @@ class Home(QMainWindow):
             filter_script = self.filter_label.text().replace("/", "\\\\")
             cloudcompy_path = self.CloudComPy_label.text().replace("/", "\\\\")
             if cloudcompy_path.split(":")[0] == "D":
-                cloudcompy_path = "/d "+cloudcompy_path
+                cloudcompy_path = "/d " + cloudcompy_path
             file.write(f'Parent_Directory="{parent_directory}"\n')
             file.write(f'CloudComPy310_path="{cloudcompy_path}"\n')
             file.write(f'Filter_script_path="{filter_script}"\n')
             file.write(f'Output_Directory="{output_directory}"\n')
-            file.write(f'Filter={self.checkBox.isChecked()}\n')
-            file.write(f'FPS={self.frames.value()}')
-            
+            file.write(f"Filter={self.checkBox.isChecked()}\n")
+            file.write(f"FPS={self.frames.value()}")
+
         # DO NOT MOVE THIS IMPORT TO THE TOP OF THE FILE OR ELSE YOU WILL DIE . YOU HAVE BEEN WARNED
+
         from backend import preprocessing
+
         # DO NOT MOVE THIS IMPORT TO THE TOP OF THE FILE OR ELSE YOU WILL DIE . YOU HAVE BEEN WARNED
         preprocessing(self)
         try:
