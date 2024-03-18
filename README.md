@@ -1,7 +1,7 @@
 # Data Preprocessing Pipeline
 
 Part of the Sensor Calibration and Data Collection Pipeline Bachelor Thesis Project 24' at the GUC under the supervision of Dr. Eng. Catherine M. Elias. <br/>
-The script takes a pcap lidar recording and CSVs of all the frames and outputs the data in KITTI format by removing the extra columns and adding the timestamp to the point cloud data and converting the point cloud into text files.
+The script takes a directory containing n sub-directories containing CSVs of point cloud frames recorded with Velodyne's lidars and outputs the data in KITTI format then apply SOR filter on all the frames.
 
 ## Installation
 
