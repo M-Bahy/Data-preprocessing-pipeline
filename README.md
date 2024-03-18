@@ -165,10 +165,22 @@ Unzip the binary tarfile in the directory of your choice.
 
 ## Run
 
-Use the `run.bat` to run the project or alternatively run the following commands in the terminal
+Use the `C-DRiVeS.bat` to run the project or alternatively run the following commands in the terminal
 
 ```
 python GUI.py
+```
+
+## Prerequisite
+
+import your Velodyne's lidar recording into [Veloview](https://www.paraview.org/veloview/#download) and choose <br/>
+File -> Save As -> Save CSV -> All Frames -> OK
+
+:warning: **The PCAP file MUST be kept with its default name**
+Example:
+```
+2024-02-22-12-13-56_Velodyne-VLP-32C-Data.pcap
+2024-03-03-16-11-09_Velodyne-Data.pcap
 ```
 
 ## Usage
