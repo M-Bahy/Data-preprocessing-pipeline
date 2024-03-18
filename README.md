@@ -10,13 +10,22 @@ pip install -r requirements.txt
 ```
 <h3 align="center">CloudCompare</h3>
 <p align="center">
-  <img src="https://res.cloudinary.com/canonical/image/fetch/f_auto,q_auto,fl_sanitize,w_60,h_60/https://dashboard.snapcraft.io/site_media/appmedia/2017/02/icon_19.png" href="https://www.danielgm.net/cc/" width="200" height="200" />
+    <a href="https://www.danielgm.net/cc/">
+        <img src="https://res.cloudinary.com/canonical/image/fetch/f_auto,q_auto,fl_sanitize,w_60,h_60/https://dashboard.snapcraft.io/site_media/appmedia/2017/02/icon_19.png" width="200" height="200" />
+    </a>
 </p>
 <h3 align="center">Veloview</h3>
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Kitware/VeloView/master/Application/Icons/logo.png" href="https://www.paraview.org/veloview/#download" width="200" height="200" />
+    <a href="https://www.paraview.org/veloview/#download">
+        <img src="https://raw.githubusercontent.com/Kitware/VeloView/master/Application/Icons/logo.png" width="200" height="200" />
+    </a>
 </p>
 <h3 align="center">CloudComPy</h3>
+<details>
+    <summary>Click to expand!</summary>
+    
+    This is the content inside the collapsible section. You can put anything you want here, including Markdown or HTML code.
+</details>
 
 ## Installation
 
