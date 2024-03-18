@@ -23,6 +23,13 @@ sub_directories = [
 def scan_sub_directory(sub_directory):
     """
     Scans the given sub-directory for CSV files and returns the recording file name and a list of CSV file names.
+    The directory structure is as follows:
+    Parent_Directory
+    ├── sub_directory
+    │   └── recording_file_name (Frame 0).csv   e.g. 2024-02-22-12-13-56_Velodyne-VLP-32C-Data (Frame 0).csv
+    │   └── recording_file_name (Frame 1).csv
+    │   └── recording_file_name (Frame 2).csv
+    │   └── ...
 
     Args:
         sub_directory (str): The name of the sub-directory to scan.
@@ -78,7 +85,19 @@ def decode_recording_file_name(recording_file_name):
 
 def output_folder_hierarchy(sub_directory, date):
     """
-    Create the output folder hierarchy for storing processed data.
+    Create the output folder hierarchy for storing processed data and copy the filter script to the data directory if filtering is enabled.
+    The filter script runs in its own directory that is why it is copied to the data directory. and it will delete itself after filtering the data.
+    The output folder hierarchy is as follows:
+    Output_Directory
+    ├── sub_directory
+    │   └── date
+    │       └── velodyne_points
+    │           ├── timestamps.txt
+    │           └── data
+    │               └── filter.py (if filtering is enabled)
+    │               └── 000000.txt
+    │               └── 000001.txt
+    │               └── ...
 
     Args:
         sub_directory (str): The sub-directory within the output directory.
@@ -242,8 +261,6 @@ def process_csv_files(csv_file_names, sub_directory, directory_number, date, tim
         raise Exception("An error occurred while processing the CSV files:", e)
 
 
-
-
 def filter_the_data(sub_directory, date):
     """
     Filter the data using a CloudComPy SOR filter.
@@ -265,6 +282,8 @@ def filter_the_data(sub_directory, date):
         "Don't touch the app and don't worry if it's not responding, it's working on the background. It will take a while."
     )
     try:
+        # Go to the CloudComPy310 directory, activate the CloudComPy310 environment, and run the filter script.
+        # Since CloudComPy310 is still in development, it can only run in a conda environment.
         os.system(
             f"cmd /k cd \"{CloudComPy310_path}\" ^&^& conda activate CloudComPy310 ^&^& envCloudComPy.bat ^&^& Python \"{os.path.join(Output_Directory,sub_directory, date, 'velodyne_points', 'data', Script_name)}\" ^&^& exit"
         )
