@@ -8,6 +8,7 @@ The script takes a directory containing n sub-directories containing CSVs of poi
 ```
 pip install -r requirements.txt
 ```
+<h3 align="center">CloudCompare</h3>
 <p align="center">
   <img src="https://res.cloudinary.com/canonical/image/fetch/f_auto,q_auto,fl_sanitize,w_60,h_60/https://dashboard.snapcraft.io/site_media/appmedia/2017/02/icon_19.png" href="https://www.danielgm.net/cc/" width="200" height="200" />
 </p>
