@@ -3,6 +3,8 @@
 Part of the Sensor Calibration and Data Collection Pipeline Bachelor Thesis Project 24' at the GUC under the supervision of Dr. Eng. Catherine M. Elias. <br/>
 The script takes a directory containing n sub-directories containing CSVs of point cloud frames recorded with Velodyne's lidars and outputs the data in KITTI format and apply SOR filter on all the frames.
 
+:warning: **This project have only been tested on Windows 10.**
+
 ## Requirements
 
 ```
@@ -161,32 +163,59 @@ conda install "boost" "cgal" cmake draco ffmpeg "gdal" jupyterlab laszip "matplo
 Unzip the binary tarfile in the directory of your choice.
 </details>
 
-## Installation
-
-Provide steps on how to install the project locally.
-
-```
-git clone https://github.com/M-Bahy/Data-preprocessing-pipeline.git
-cd Data-preprocessing-pipeline
-```
-
-## Environment Variables
-
-To run this project, you will need to create your .env file
-
-`Working_Directory` - Path to the directory containing the pcap file and the csv files
-
-`FPS` - Frames per second of the recording
-
-`Output_Directory` - Path to the directory where the output files will be saved in the kitti style
-
 ## Run
 
 Use the `run.bat` to run the project or alternatively run the following commands in the terminal
 
 ```
-python post_veloview.py
+python GUI.py
 ```
+
+## Usage
+
+1. Select the parent directory . Its structure should be as follows:
+```
+parent_directory
+│
+└───sub_directory_1
+│   │   recording_file_name (Frame 0).csv   e.g. 2024-02-22-12-13-56_Velodyne-VLP-32C-Data (Frame 0).csv
+│   │   recording_file_name (Frame 1).csv
+│   │   ...
+│
+└───sub_directory_2
+│   │   recording_file_name (Frame 0).csv 
+│   │   recording_file_name (Frame 1).csv
+│   │   ...
+│
+└───...
+```
+2. Select the CloudComPy directory.
+3. Select the `filter.py` file.
+4. Select the output directory. Its structure will be as follows:
+```
+Output_Directory
+├── sub_directory_1
+│   └── date
+│       └── velodyne_points
+│           ├── timestamps.txt
+│           └── data
+│               └── filter.py (if filtering is enabled)
+│               └── 000000.txt
+│               └── 000001.txt
+│               └── ...
+├── sub_directory_2
+│   └── date
+│       └── velodyne_points
+│           ├── timestamps.txt
+│           └── data
+│               └── filter.py (if filtering is enabled)
+│               └── 000000.txt
+│               └── 000001.txt
+│               └── ...
+├── ...
+```
+6. Set the recording FPS.
+7. Choose whether to apply the SOR filter or not.
 
 ## Contributing
 

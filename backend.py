@@ -23,14 +23,7 @@ sub_directories = [
 def scan_sub_directory(sub_directory):
     """
     Scans the given sub-directory for CSV files and returns the recording file name and a list of CSV file names.
-    The directory structure is as follows:
-    Parent_Directory
-    ├── sub_directory
-    │   └── recording_file_name (Frame 0).csv   e.g. 2024-02-22-12-13-56_Velodyne-VLP-32C-Data (Frame 0).csv
-    │   └── recording_file_name (Frame 1).csv
-    │   └── recording_file_name (Frame 2).csv
-    │   └── ...
-
+    
     Args:
         sub_directory (str): The name of the sub-directory to scan.
 
@@ -87,18 +80,7 @@ def output_folder_hierarchy(sub_directory, date):
     """
     Create the output folder hierarchy for storing processed data and copy the filter script to the data directory if filtering is enabled.
     The filter script runs in its own directory that is why it is copied to the data directory. and it will delete itself after filtering the data.
-    The output folder hierarchy is as follows:
-    Output_Directory
-    ├── sub_directory
-    │   └── date
-    │       └── velodyne_points
-    │           ├── timestamps.txt
-    │           └── data
-    │               └── filter.py (if filtering is enabled)
-    │               └── 000000.txt
-    │               └── 000001.txt
-    │               └── ...
-
+    
     Args:
         sub_directory (str): The sub-directory within the output directory.
         date (str): The date for creating a sub-directory within the output directory.
