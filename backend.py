@@ -22,9 +22,17 @@ sub_directories = [
 
 def scan_sub_directory(sub_directory):
     """
-    Scans the directory for CSV files.
+    Scans the given sub-directory for CSV files and returns the recording file name and a list of CSV file names.
+
+    Args:
+        sub_directory (str): The name of the sub-directory to scan.
+
+    Returns:
+        tuple: A tuple containing the recording file name (str) and a list of CSV file names (list of str).
+
     Raises:
-        Exception: If no CSV files are found in the directory.
+        Exception: If no CSV files are found in the sub-directory.
+
     """
     try:
         files = os.listdir(os.path.join(Parent_Directory, sub_directory))
@@ -39,12 +47,24 @@ def scan_sub_directory(sub_directory):
         print(f"CSV files found: {len(csv_file_names)} files")
         return recording_file_name, csv_file_names
     except Exception as e:
-        raise Exception(f"An error occurred while scanning the sub-directory {sub_directory} :", e)
+        raise Exception(
+            f"An error occurred while scanning the sub-directory {sub_directory} :", e
+        )
 
 
 def decode_recording_file_name(recording_file_name):
     """
-    Extracts the data from the recording file name.
+    Decode the recording file name to extract the date and time.
+
+    Args:
+        recording_file_name (str): The name of the recording file.
+
+    Returns:
+        tuple: A tuple containing the date and time extracted from the recording file name.
+
+    Raises:
+        Exception: If an error occurs while decoding the recording file name.
+
     """
     try:
         datetime = recording_file_name.split("_")[0]
@@ -58,7 +78,17 @@ def decode_recording_file_name(recording_file_name):
 
 def output_folder_hierarchy(sub_directory, date):
     """
-    Creates a folder hierarchy for storing output files.
+    Create the output folder hierarchy for storing processed data.
+
+    Args:
+        sub_directory (str): The sub-directory within the output directory.
+        date (str): The date for creating a sub-directory within the output directory.
+
+    Raises:
+        Exception: If an error occurs while creating the output folder hierarchy.
+
+    Returns:
+        None
     """
     try:
         output_dir = os.path.join(Output_Directory, sub_directory, date)
@@ -74,12 +104,26 @@ def output_folder_hierarchy(sub_directory, date):
             shutil.copy(Filter_script_path, data_dir)
         print("Output folder hierarchy created successfully.")
     except Exception as e:
-        raise Exception("An error occurred while creating the output folder hierarchy:", e)
+        raise Exception(
+            "An error occurred while creating the output folder hierarchy:", e
+        )
 
 
 def init_pipeline(sub_directory):
     """
     Initializes the data preprocessing pipeline.
+
+    Args:
+        sub_directory (str): The path to the sub-directory containing the data.
+
+    Returns:
+        tuple: A tuple containing the recording file name, a list of CSV file names,
+               the date extracted from the recording file name, and the time extracted
+               from the recording file name.
+
+    Raises:
+        Exception: If an error occurs while initializing the pipeline.
+
     """
     try:
         recording_file_name, csv_file_names = scan_sub_directory(sub_directory)
@@ -92,17 +136,18 @@ def init_pipeline(sub_directory):
 
 def add_offset(date, time):
     """
-    Adds an offset to the global date and time variables.
-
-    This function combines the global `date` and `time` variables into a single datetime object,
-    then adds the offset (in microseconds) to the datetime object. The updated date and time are
-    stored back into the global variables.
+    Adds an offset to the given date and time. The offset is calculated based on the frame rate. It is number of microseconds between each frame.
 
     Args:
-        None
+        date (str): The date in the format 'YYYY-MM-DD'.
+        time (str): The time in the format 'HH:MM:SS.ssssss'.
 
     Returns:
-        None
+        tuple: A tuple containing the modified date and time in the same format as the input.
+
+    Raises:
+        Exception: If an error occurs while adding the offset.
+
     """
     try:
         daytime = datetime.strptime(date + " " + time, "%Y-%m-%d %H:%M:%S.%f")
@@ -116,14 +161,16 @@ def add_offset(date, time):
 
 def write_time_stamp(date, time, sub_directory):
     """
-    Write the date and time to a timestamps file.
+    Write the given date and time to a timestamps.txt file.
 
     Args:
-        date (str): The date in the format "YYYY-MM-DD".
-        time (str): The time in the format "HH:MM:SS.mmmmmm".
+        date (str): The date to be written.
+        time (str): The time to be written.
+        sub_directory (str): The sub-directory where the timestamps.txt file will be created.
 
-    Returns:
-        None
+    Raises:
+        Exception: If an error occurs while writing the timestamp.
+
     """
     try:
         timestamps = os.path.join(
@@ -137,16 +184,17 @@ def write_time_stamp(date, time, sub_directory):
 
 def process_csv_files(csv_file_names, sub_directory, directory_number, date, time):
     """
-    Process CSV files in the sub_directory and convert them to TXT files.
+    Converts CSV files in the specified sub-directory to KITTI format (X, Y, Z, intensity in a text file) and writes the timestamps in timestamps.txt file.
 
-    This function reads each CSV file in the sub_directory, applies optional data filtering,
-    converts the columns to a specific format (x y z intensity), and saves the resulting data as TXT files,
-    In the output directory. The function also writes the timestamps of the TXT files to a timestamps file.
-    Each timestamp is written in the format "YYYY-MM-DD HH:MM:SS.mmmmmm" and represents the time of the
-    corresponding TXT file.
+    Args:
+        csv_file_names (list): List of CSV file names.
+        sub_directory (str): Sub-directory where the CSV files are located.
+        directory_number (int): Directory number.
+        date (str): Date of the recording.
+        time (str): Time of the frame.
 
     Raises:
-        Exception: If no CSV files are found in the sub_directory.
+        Exception: If CSV files are not found or an error occurs while processing the files.
 
     Returns:
         None
@@ -194,12 +242,28 @@ def process_csv_files(csv_file_names, sub_directory, directory_number, date, tim
         raise Exception("An error occurred while processing the CSV files:", e)
 
 
+
+
 def filter_the_data(sub_directory, date):
     """
-    Filter the data using the CloudComPy library.
+    Filter the data using a CloudComPy SOR filter.
+
+    Args:
+        sub_directory (str): The sub-directory where the data is located.
+        date (str): The date of the recording.
+
+    Returns:
+        int: 0 if the filtering process is successful.
+
+    Raises:
+        Exception: If an error occurs while filtering the data.
     """
-    print("It is recommended to close all other applications as the filtering process is cpu intensive.")
-    print("Don't touch the app and don't worry if it's not responding, it's working on the background. It will take a while.")
+    print(
+        "It is recommended to close all other applications as the filtering process is cpu intensive."
+    )
+    print(
+        "Don't touch the app and don't worry if it's not responding, it's working on the background. It will take a while."
+    )
     try:
         os.system(
             f"cmd /k cd \"{CloudComPy310_path}\" ^&^& conda activate CloudComPy310 ^&^& envCloudComPy.bat ^&^& Python \"{os.path.join(Output_Directory,sub_directory, date, 'velodyne_points', 'data', Script_name)}\" ^&^& exit"
@@ -210,17 +274,39 @@ def filter_the_data(sub_directory, date):
 
 
 def convert_to_kitti_format(sub_directory, directory_number):
+    """
+    Converts the data in the specified sub_directory to the KITTI format.
+
+    Args:
+        sub_directory (str): The path to the sub-directory containing the data.
+        directory_number (int): The directory number.
+
+    Returns:
+        int: Returns 0 if the conversion is successful.
+
+    Raises:
+        Exception: If an error occurs during the conversion process.
+    """
     try:
         recording_file_name, csv_file_names, date, time = init_pipeline(sub_directory)
         process_csv_files(csv_file_names, sub_directory, directory_number, date, time)
         if Filter:
-         return  filter_the_data(sub_directory, date)
+            return filter_the_data(sub_directory, date)
         return 0
     except Exception as e:
         return str(e)
 
 
 def preprocessing(GUI):
+    """
+    Preprocesses the data by converting it to the KITTI format and filtering it if required. The process is parallelized using the ProcessPoolExecutor.
+
+    Args:
+        GUI: An instance of the GUI class.
+
+    Returns:
+        None
+    """
     try:
         start_time = datetime.now()
         with ProcessPoolExecutor() as executor:
@@ -245,4 +331,3 @@ def preprocessing(GUI):
             )
     except Exception as e:
         GUI.errorMessage("Error", e)
-
