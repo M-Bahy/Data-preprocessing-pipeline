@@ -214,13 +214,13 @@ def process_csv_files(csv_file_names, sub_directory, directory_number, date, tim
             csv_file_path = os.path.join(Parent_Directory, sub_directory, csv_file_name)
             data_frame = pd.read_csv(csv_file_path)
             if csv_file_name != csv_file_names[0]:
-                add_offset(date, time)
+                date,time=add_offset(date, time)
             write_time_stamp(date, time, sub_directory)
             data_frame = data_frame[
                 ["Points_m_XYZ:0", "Points_m_XYZ:1", "Points_m_XYZ:2", "intensity"]
             ]
             data_frame = data_frame.applymap(lambda x: f"{float(x):.8f}")
-            count_str = str(count).zfill(6)
+            count_str = str(count).zfill(10)
             txt_path = os.path.join(
                 Output_Directory,
                 sub_directory,
