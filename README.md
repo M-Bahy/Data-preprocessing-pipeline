@@ -207,7 +207,7 @@ parent_directory
 ```
 Output_Directory
 ├── sub_directory_1
-│   └── date
+│   └── day
 │       └── velodyne_points
 │           ├── timestamps.txt
 │           └── data
@@ -216,7 +216,7 @@ Output_Directory
 │               └── 000001.txt
 │               └── ...
 ├── sub_directory_2
-│   └── date
+│   └── day
 │       └── velodyne_points
 │           ├── timestamps.txt
 │           └── data
