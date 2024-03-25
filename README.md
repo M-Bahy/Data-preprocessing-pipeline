@@ -187,19 +187,16 @@ Example:
 
 1. Select the parent directory . Its structure should be as follows:
 ```
-parent_directory
-│
-└───sub_directory_1
-│   │   recording_file_name (Frame 0).csv   e.g. 2024-02-22-12-13-56_Velodyne-VLP-32C-Data (Frame 0).csv
-│   │   recording_file_name (Frame 1).csv
-│   │   ...
-│
-└───sub_directory_2
-│   │   recording_file_name (Frame 0).csv 
-│   │   recording_file_name (Frame 1).csv
-│   │   ...
-│
-└───...
+Parent_Directory
+├── sub_directory_1
+│   ├── recording_file_name (Frame 0).csv
+│   ├── recording_file_name (Frame 1).csv
+│   └── ...
+├── sub_directory_2
+│   ├── recording_file_name (Frame 0).csv
+│   ├── recording_file_name (Frame 1).csv
+│   └── ...
+└── ...
 ```
 2. Select the CloudComPy directory.
 3. Select the `filter.py` file.
