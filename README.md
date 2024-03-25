@@ -190,7 +190,7 @@ Example:
 parent_directory
 │
 └───sub_directory_1
-│   │   recording_file_name (Frame 0).csv   e.g. 2024-02-22-12-13-56_Velodyne-VLP-32C-Data (Frame 0).csv
+│   │   recording_file_name (Frame 0).csv  e.g. 2024-02-22-12-13-56_Velodyne-VLP-32C-Data (Frame 0).csv
 │   │   recording_file_name (Frame 1).csv
 │   │   ...
 │
