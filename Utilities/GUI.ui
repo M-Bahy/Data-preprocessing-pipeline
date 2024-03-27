@@ -216,8 +216,8 @@
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>630</x>
-      <y>340</y>
+      <x>760</x>
+      <y>210</y>
       <width>111</width>
       <height>41</height>
      </rect>
@@ -255,7 +255,7 @@
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>310</x>
+      <x>350</x>
       <y>350</y>
       <width>195</width>
       <height>31</height>
@@ -277,6 +277,33 @@
       </widget>
      </item>
     </layout>
+   </widget>
+   <widget class="QCheckBox" name="live">
+    <property name="geometry">
+     <rect>
+      <x>760</x>
+      <y>280</y>
+      <width>111</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="layoutDirection">
+     <enum>Qt::LeftToRight</enum>
+    </property>
+    <property name="autoFillBackground">
+     <bool>false</bool>
+    </property>
+    <property name="text">
+     <string>Live data</string>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
    </widget>
   </widget>
  </widget>
