@@ -298,7 +298,7 @@ def convert_to_kitti_format(sub_directory, directory_number):
         return str(e)
 
 
-def preprocessing(GUI):
+def veloview_preprocessing(GUI):
     """
     Preprocesses the data by converting it to the KITTI format and filtering it if required. The process is parallelized using the ProcessPoolExecutor.
 

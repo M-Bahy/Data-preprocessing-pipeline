@@ -170,13 +170,11 @@ class Home(QMainWindow):
         Runs the data preprocessing pipeline.
 
         This method checks if all the required fields are filled in the GUI. If any field is empty, it displays an error message and returns.
-        Otherwise, it creates a .env file and writes the necessary configuration parameters to it.
-        Then, it imports the `preprocessing` function from the `backend` module and calls it with the current instance of the GUI.
+        Otherwise, it creates a .env file and writes the necessary configuration parameters to it. And runs the data preprocessing pipeline.
         Finally, it removes the .env file.
 
-        Note: The import statement for `preprocessing` should NOT be moved to the top of the file.
-              This is because the backend file sets global variables from the .env file,
-              and if the import statement is moved to the top, the global variables will be set before the .env file is created.
+        Note: The import statements should NOT be moved to the top of the file.
+              If the import statement is moved to the top, the global variables will be set before the .env file is created.
 
         Returns:
             None
@@ -209,10 +207,10 @@ class Home(QMainWindow):
 
         # DO NOT MOVE THIS IMPORT TO THE TOP OF THE FILE OR ELSE YOU WILL DIE . YOU HAVE BEEN WARNED
 
-        from backend import preprocessing
+        from veloview import veloview_preprocessing
 
         # DO NOT MOVE THIS IMPORT TO THE TOP OF THE FILE OR ELSE YOU WILL DIE . YOU HAVE BEEN WARNED
-        preprocessing(self)
+        veloview_preprocessing(self)
         try:
             os.remove(".env")
         except:
