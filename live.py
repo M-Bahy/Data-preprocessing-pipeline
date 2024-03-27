@@ -40,7 +40,7 @@ def scan_sub_directory(sub_directory):
             print("Parent Directory: ", Parent_Directory)
             print("Sub Directory: ", sub_directory)
             raise Exception("CSV files not found")
-        #recording_file_name = csv_file_names[0]
+        # recording_file_name = csv_file_names[0]
         print("Scanned directory successfully")
         print(f"Recording file name: {sub_directory}")
         print(f"CSV files found: {len(csv_file_names)} files")
@@ -181,16 +181,14 @@ def process_csv_files(csv_file_names, sub_directory, directory_number, date, tim
         print("Parent Directory: ", Parent_Directory)
         print("Sub Directory: ", sub_directory)
         csv_file_names = [file for file in files if file.endswith(".csv")]
-        csv_file_names.sort(
-            key=lambda file: int(file.split(" ")[-1].split(".")[0][:-1])
-        )
+        csv_file_names.sort()
         if not csv_file_names:
             raise Exception("CSV files not found")
         for count, csv_file_name in enumerate(csv_file_names, start=0):
             print("File name: ", csv_file_name)
             csv_file_path = os.path.join(Parent_Directory, sub_directory, csv_file_name)
             data_frame = pd.read_csv(csv_file_path)
-            frame_date,frame_time = decode_recording_file_name(csv_file_name)
+            frame_date, frame_time = decode_recording_file_name(csv_file_name)
             write_time_stamp(frame_date, frame_time, sub_directory)
             data_frame = data_frame[
                 ["Points_m_XYZ:0", "Points_m_XYZ:1", "Points_m_XYZ:2", "intensity"]

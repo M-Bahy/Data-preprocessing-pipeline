@@ -208,9 +208,11 @@ class Home(QMainWindow):
         # DO NOT MOVE THIS IMPORT TO THE TOP OF THE FILE OR ELSE YOU WILL DIE . YOU HAVE BEEN WARNED
 
         from veloview import veloview_preprocessing
+        from live import live_preprocessing
 
         # DO NOT MOVE THIS IMPORT TO THE TOP OF THE FILE OR ELSE YOU WILL DIE . YOU HAVE BEEN WARNED
-        veloview_preprocessing(self)
+        #veloview_preprocessing(self)
+        live_preprocessing(self)
         try:
             os.remove(".env")
         except:
