@@ -30,6 +30,7 @@ class Home(QMainWindow):
         self.clear_button = self.findChild(QPushButton, "clear_button")
         self.start = self.findChild(QPushButton, "start")
         self.checkBox = self.findChild(QCheckBox, "checkBox")
+        self.live_data = self.findChild(QCheckBox, "live")
         self.frames = self.findChild(QSpinBox, "frames")
         self.parent_directory.clicked.connect(self.directory_path)
         self.CloudComPy_directory.clicked.connect(self.directory_path)
@@ -211,8 +212,10 @@ class Home(QMainWindow):
         from live import live_preprocessing
 
         # DO NOT MOVE THIS IMPORT TO THE TOP OF THE FILE OR ELSE YOU WILL DIE . YOU HAVE BEEN WARNED
-        #veloview_preprocessing(self)
-        live_preprocessing(self)
+        if self.live_data.isChecked():
+            live_preprocessing(self)
+        else:
+            veloview_preprocessing(self)
         try:
             os.remove(".env")
         except:
