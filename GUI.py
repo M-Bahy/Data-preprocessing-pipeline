@@ -1,4 +1,5 @@
 from PyQt5 import uic
+from datetime import datetime
 import os
 from PyQt5.QtWidgets import (
     QApplication,
@@ -41,6 +42,7 @@ class Home(QMainWindow):
         self.output_path.clicked.connect(self.directory_path)
         self.clear_button.clicked.connect(self.clear)
         self.start.clicked.connect(self.run)
+        self.record.clicked.connect(self.capture)
         self.parent_label = self.findChild(QLabel, "parent_label")
         self.CloudComPy_label = self.findChild(QLabel, "CloudComPy_label")
         self.filter_label = self.findChild(QLabel, "filter_label")
@@ -210,7 +212,25 @@ class Home(QMainWindow):
         Returns:
         None
         """
-        pass
+        path = QFileDialog.getExistingDirectory(
+                self,
+                "Select the directory to save the .pcap file",
+                "D:\\CMS\\Bachelor\\Softwares\\VeloView\\records\\Test parent style",
+            )
+        if path == "":
+            self.errorMessage("Error", "Please select a directory")
+            return
+        try:
+            os.remove(".env")
+        except:
+            pass
+        with open(".env", "w") as file:
+            file.write(f'SAVE_FOLDER="{path}"\n')
+            file.write(f'SUB_DIRECTORY="{datetime.now().strftime("%Y-%m-%d %H-%M-%S.%f")}"')
+        
+        from stream import pcap_encoder
+        
+        pcap_encoder()
     
     def run(self):
         """

@@ -95,16 +95,17 @@ def convert_to_csv(DATA_QUEUE):
                     writer.writerow([x, y, z, intensity])
 
 
-def on_press(key):
-    try:
-        if key.char == "a":
-            processA.terminate()
-            # print("Stopped processA due to 'a' key press.")
-            DATA_QUEUE.put({"data": "STOP", "time": get_timestamp()})
-            PKTS.put({"data": "STOP", "time": get_timestamp()})
-            return False  # Stop the listener
-    except AttributeError:
-        pass  # Non-character keys
+# def on_press(key):
+#     global ProcessA
+#     try:
+#         if key.char == "a":
+#             processA.terminate()
+#             # print("Stopped processA due to 'a' key press.")
+#             DATA_QUEUE.put({"data": "STOP", "time": get_timestamp()})
+#             PKTS.put({"data": "STOP", "time": get_timestamp()})
+#             return False  # Stop the listener
+#     except AttributeError:
+#         pass  # Non-character keys
 
 
 def create_pcap(PKTS):
@@ -122,18 +123,32 @@ def create_pcap(PKTS):
         kimo = Ether(HEADERS + pkt["data"])
         kimo.time = pkt["time"]
         pcap_writer.write(kimo)
+        if counter == 1 :
+            # write pkt["time"] to a file
+            with open(f"{SAVE_FOLDER}/{SUB_DIRECTORY}/time.txt", "w") as file:
+                file.write(pkt["time"])
 
 
-if __name__ == "__main__":
+def stop_stream(processA):
+    def stop(key):
+        try:
+            if key.char == "a":
+                processA.terminate()
+                # print("Stopped processA due to 'a' key press.")
+                DATA_QUEUE.put({"data": "STOP", "time": get_timestamp()})
+                PKTS.put({"data": "STOP", "time": get_timestamp()})
+                return False  # Stop the listener
+        except AttributeError:
+            pass  # Non-character keys
+    return stop
+
+def pcap_encoder():
     # Set the values in the .env file
     start_time = datetime.now()
-    set_key(".env", "SUB_DIRECTORY", str(get_timestamp()))
-    set_key(".env", "SAVE_FOLDER", "SAVE_FOLDER")
     if not os.path.exists(f"{SAVE_FOLDER}/{SUB_DIRECTORY}"):
         os.makedirs(f"{SAVE_FOLDER}/{SUB_DIRECTORY}")
 
-    listener = keyboard.Listener(on_press=on_press)
-    listener.start()
+    
     processA = Process(target=stream, args=(DATA_QUEUE, PKTS))
     processA.start()
     processB = Process(target=convert_to_csv, args=(DATA_QUEUE,))
@@ -141,11 +156,17 @@ if __name__ == "__main__":
     processC = Process(target=create_pcap, args=(PKTS,))
     processC.start()
     
+    listener = keyboard.Listener(on_press=stop_stream(processA))
+    listener.start()
+    
     # Wait for both processes to finish
     processA.join()
     # processB.join()
     processC.join()
     
+    
+    
     end_time = datetime.now()
     
-    print("execution time : " , end_time - start_time)
+    print("Recording time : " , end_time - start_time)
+
