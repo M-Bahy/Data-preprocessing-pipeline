@@ -32,6 +32,7 @@ class Home(QMainWindow):
         self.checkBox = self.findChild(QCheckBox, "checkBox")
         self.live_data = self.findChild(QCheckBox, "live")
         self.frames = self.findChild(QSpinBox, "frames")
+        self.fps_label = self.findChild(QLabel, "fps_label")
         self.parent_directory.clicked.connect(self.directory_path)
         self.CloudComPy_directory.clicked.connect(self.directory_path)
         self.script_path.clicked.connect(self.file_path)
@@ -166,6 +167,33 @@ class Home(QMainWindow):
         self.checkBox.setChecked(False)
         self.frames.setValue(1)
 
+    def hide_all(self):
+        """
+        Hides all the widgets in the GUI.
+
+        This method hides all the widgets in the GUI except for the start button.
+
+        Parameters:
+        None
+
+        Returns:
+        None
+        """
+        self.parent_directory.hide()
+        self.CloudComPy_directory.hide()
+        self.script_path.hide()
+        self.output_path.hide()
+        self.clear_button.hide()
+        self.start.hide()
+        self.checkBox.hide()
+        self.live_data.hide()
+        self.frames.hide()
+        self.fps_label.hide()
+        self.parent_label.hide()
+        self.CloudComPy_label.hide()
+        self.filter_label.hide()
+        self.out_label.hide()
+    
     def run(self):
         """
         Runs the data preprocessing pipeline.
@@ -225,6 +253,7 @@ class Home(QMainWindow):
 def main():
     app = QApplication(sys.argv)
     window = Home()
+    window.hide_all()
     sys.exit(app.exec_())
 
 

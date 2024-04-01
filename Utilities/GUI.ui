@@ -224,7 +224,7 @@
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QLabel" name="label">
+      <widget class="QLabel" name="fps_label">
        <property name="font">
         <font>
          <family>Segoe UI</family>
