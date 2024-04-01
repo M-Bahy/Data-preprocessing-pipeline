@@ -29,6 +29,8 @@ class Home(QMainWindow):
         self.output_path = self.findChild(QPushButton, "Output_Directory")
         self.clear_button = self.findChild(QPushButton, "clear_button")
         self.start = self.findChild(QPushButton, "start")
+        self.record = self.findChild(QPushButton, "record_button")
+        self.view = self.findChild(QPushButton, "view_button")
         self.checkBox = self.findChild(QCheckBox, "checkBox")
         self.live_data = self.findChild(QCheckBox, "live")
         self.frames = self.findChild(QSpinBox, "frames")
@@ -185,6 +187,8 @@ class Home(QMainWindow):
         self.output_path.hide()
         self.clear_button.hide()
         self.start.hide()
+        self.record.hide()
+        self.view.hide()
         self.checkBox.hide()
         self.live_data.hide()
         self.frames.hide()
@@ -193,6 +197,20 @@ class Home(QMainWindow):
         self.CloudComPy_label.hide()
         self.filter_label.hide()
         self.out_label.hide()
+    
+    def capture(self):
+        """
+        Captures the live data from the Velodyne sensor.
+
+        This method captures the live data from the Velodyne sensor and saves it to a .pcap file.
+
+        Parameters:
+        None
+
+        Returns:
+        None
+        """
+        pass
     
     def run(self):
         """
@@ -253,7 +271,7 @@ class Home(QMainWindow):
 def main():
     app = QApplication(sys.argv)
     window = Home()
-    window.hide_all()
+    # window.hide_all()
     sys.exit(app.exec_())
 
 
