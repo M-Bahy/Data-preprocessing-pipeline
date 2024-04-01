@@ -43,6 +43,7 @@ class Home(QMainWindow):
         self.clear_button.clicked.connect(self.clear)
         self.start.clicked.connect(self.run)
         self.record.clicked.connect(self.capture)
+        self.view.clicked.connect(self.visualize)
         self.parent_label = self.findChild(QLabel, "parent_label")
         self.CloudComPy_label = self.findChild(QLabel, "CloudComPy_label")
         self.filter_label = self.findChild(QLabel, "filter_label")
@@ -199,7 +200,7 @@ class Home(QMainWindow):
         self.CloudComPy_label.hide()
         self.filter_label.hide()
         self.out_label.hide()
-    
+
     def capture(self):
         """
         Captures the live data from the Velodyne sensor.
@@ -213,10 +214,10 @@ class Home(QMainWindow):
         None
         """
         path = QFileDialog.getExistingDirectory(
-                self,
-                "Select the directory to save the .pcap file",
-                "D:\\CMS\\Bachelor\\Softwares\\VeloView\\records\\Test parent style",
-            )
+            self,
+            "Select the directory to save the .pcap file",
+            "D:\\CMS\\Bachelor\\Softwares\\VeloView\\records\\Test parent style",
+        )
         if path == "":
             self.errorMessage("Error", "Please select a directory")
             return
@@ -226,12 +227,37 @@ class Home(QMainWindow):
             pass
         with open(".env", "w") as file:
             file.write(f'SAVE_FOLDER="{path}"\n')
-            file.write(f'SUB_DIRECTORY="{datetime.now().strftime("%Y-%m-%d %H-%M-%S.%f")}"')
-        
+            file.write(
+                f'SUB_DIRECTORY="{datetime.now().strftime("%Y-%m-%d %H-%M-%S.%f")}"'
+            )
+
         from stream import pcap_encoder
-        
+
         pcap_encoder()
-    
+
+    def visualize(self):
+        """
+        Visualizes the live data from the Velodyne sensor.
+
+        This method visualizes the live data from the Velodyne sensor .
+
+        Parameters:
+        None
+
+        Returns:
+        None
+        """
+        path = QFileDialog.getExistingDirectory(
+            self,
+            "Select the data directory to visualize",
+            "D:\\CMS\\Bachelor\\Softwares\\VeloView\\records\\Test parent style",
+        )
+        if path == "":
+            self.errorMessage("Error", "Please select a directory")
+            return
+
+        os.system(f'lidar_visualizer "{path}"')
+
     def run(self):
         """
         Runs the data preprocessing pipeline.
