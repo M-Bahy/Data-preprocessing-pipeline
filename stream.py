@@ -96,8 +96,7 @@ def stop_stream(processA):
 def pcap_encoder():
 
     start_time = datetime.now()
-    if not os.path.exists(f"{SAVE_FOLDER}/{SUB_DIRECTORY}"):
-        os.makedirs(f"{SAVE_FOLDER}/{SUB_DIRECTORY}")
+    os.makedirs(f"{SAVE_FOLDER}/{SUB_DIRECTORY}/{SUB_DIRECTORY}",exist_ok=True)
 
     processA = Process(target=stream, args=(DATA_QUEUE, PKTS))
     processA.start()
