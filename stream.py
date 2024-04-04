@@ -17,7 +17,9 @@ load_dotenv()
 IP = "192.168.1.1"
 PORT = 2368
 BROADCAST = b"\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x08\x00"
-IPV4 = b"\x45\x00\x04\xd2\x00\x00\x40\x00\xff\x11\xff\xff\xc0\xa8\x00\xc8\xff\xff\xff\xff"
+IPV4 = (
+    b"\x45\x00\x04\xd2\x00\x00\x40\x00\xff\x11\xff\xff\xc0\xa8\x00\xc8\xff\xff\xff\xff"
+)
 UDP = b"\x09\x40\x09\x40\x04\xbe\x00\x00"
 HEADERS = BROADCAST + IPV4 + UDP
 DATA_QUEUE = Queue(-1)
@@ -62,16 +64,12 @@ def convert_to_csv(DATA_QUEUE):
     processed = 0
     while True:
         if not DATA_QUEUE.empty():
-            # print("Queue size : ", DATA_QUEUE.qsize())
             dequeued = DATA_QUEUE.get()
             if not isinstance(dequeued["data"], np.ndarray):
-                # print("processB received stop signal from processA. Stopping processB.")
                 print("Total number of packets converted to csv : ", processed)
                 break
             points = dequeued["data"]
             timestamp = dequeued["time"]
-            # print("The save folder is : ", SAVE_FOLDER)
-            # print("The sub directory is : ", SUB_DIRECTORY)
             processed += 1
             with open(
                 f"{SAVE_FOLDER}/{SUB_DIRECTORY}/{timestamp}.csv", "w", newline=""
@@ -95,19 +93,6 @@ def convert_to_csv(DATA_QUEUE):
                     writer.writerow([x, y, z, intensity])
 
 
-# def on_press(key):
-#     global ProcessA
-#     try:
-#         if key.char == "a":
-#             processA.terminate()
-#             # print("Stopped processA due to 'a' key press.")
-#             DATA_QUEUE.put({"data": "STOP", "time": get_timestamp()})
-#             PKTS.put({"data": "STOP", "time": get_timestamp()})
-#             return False  # Stop the listener
-#     except AttributeError:
-#         pass  # Non-character keys
-
-
 def create_pcap(PKTS):
     pcap_writer = PcapWriter(
         f"{SAVE_FOLDER}/{SUB_DIRECTORY}/{SUB_DIRECTORY}.pcap", linktype=1
@@ -116,17 +101,16 @@ def create_pcap(PKTS):
     while True:
         pkt = PKTS.get()
         if pkt["data"] == "STOP":
-            # print("processC received stop signal from processA. Stopping processC.")
             print("Total number of packets written to pcap file : ", counter)
             break
         counter += 1
         kimo = Ether(HEADERS + pkt["data"])
         kimo.time = pkt["time"]
         pcap_writer.write(kimo)
-        if counter == 1 :
+        if counter == 1:
             # write pkt["time"] to a file
             with open(f"{SAVE_FOLDER}/{SUB_DIRECTORY}/time.txt", "w") as file:
-                file.write(pkt["time"])
+                file.write(str(pkt["time"]))
 
 
 def stop_stream(processA):
@@ -134,39 +118,34 @@ def stop_stream(processA):
         try:
             if key.char == "a":
                 processA.terminate()
-                # print("Stopped processA due to 'a' key press.")
                 DATA_QUEUE.put({"data": "STOP", "time": get_timestamp()})
                 PKTS.put({"data": "STOP", "time": get_timestamp()})
                 return False  # Stop the listener
         except AttributeError:
             pass  # Non-character keys
+
     return stop
 
+
 def pcap_encoder():
-    # Set the values in the .env file
+
     start_time = datetime.now()
     if not os.path.exists(f"{SAVE_FOLDER}/{SUB_DIRECTORY}"):
         os.makedirs(f"{SAVE_FOLDER}/{SUB_DIRECTORY}")
 
-    
     processA = Process(target=stream, args=(DATA_QUEUE, PKTS))
     processA.start()
     processB = Process(target=convert_to_csv, args=(DATA_QUEUE,))
-    # processB.start()
     processC = Process(target=create_pcap, args=(PKTS,))
     processC.start()
-    
+
     listener = keyboard.Listener(on_press=stop_stream(processA))
     listener.start()
-    
+
     # Wait for both processes to finish
     processA.join()
-    # processB.join()
     processC.join()
-    
-    
-    
-    end_time = datetime.now()
-    
-    print("Recording time : " , end_time - start_time)
 
+    end_time = datetime.now()
+
+    print("Recording time : ", end_time - start_time)
