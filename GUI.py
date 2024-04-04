@@ -302,10 +302,11 @@ class Home(QMainWindow):
 
         from veloview import veloview_preprocessing
         from live import live_preprocessing
-
+        from accurate import accurate_preprocessing
         # DO NOT MOVE THIS IMPORT TO THE TOP OF THE FILE OR ELSE YOU WILL DIE . YOU HAVE BEEN WARNED
         if self.live_data.isChecked():
-            live_preprocessing(self)
+            #live_preprocessing(self)
+            accurate_preprocessing(self)
         else:
             veloview_preprocessing(self)
         try:
