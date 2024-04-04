@@ -98,7 +98,13 @@ def output_folder_hierarchy(sub_directory, date):
         velodyne_dir = os.path.join(output_dir, "velodyne_points")
         os.makedirs(velodyne_dir, exist_ok=True)
         timestamps = os.path.join(velodyne_dir, "timestamps.txt")
+        timestamps_start = os.path.join(velodyne_dir, "timestamps_start.txt")
+        timestamps_end = os.path.join(velodyne_dir, "timestamps_end.txt")
         with open(timestamps, "w") as f:
+            pass
+        with open(timestamps_start, "w") as f:
+            pass
+        with open(timestamps_end, "w") as f:
             pass
         data_dir = os.path.join(velodyne_dir, "data")
         os.makedirs(data_dir, exist_ok=True)
@@ -136,7 +142,9 @@ def init_pipeline(sub_directory):
         raise Exception("An error occurred while initializing the pipeline:", e)
 
 
-def write_time_stamp(date, time, sub_directory):
+def write_time_stamp(
+    date, time, time_start, time_end, sub_directory
+):
     """
     Write the given date and time to a timestamps.txt file.
 
@@ -153,8 +161,26 @@ def write_time_stamp(date, time, sub_directory):
         timestamps = os.path.join(
             Output_Directory, sub_directory, date, "velodyne_points", "timestamps.txt"
         )
+        timestamps_start = os.path.join(
+            Output_Directory,
+            sub_directory,
+            date,
+            "velodyne_points",
+            "timestamps_start.txt",
+        )
+        timestamps_end = os.path.join(
+            Output_Directory,
+            sub_directory,
+            date,
+            "velodyne_points",
+            "timestamps_end.txt",
+        )
         with open(timestamps, "a") as f:
             f.write(f"{date} {time}\n")
+        with open(timestamps_start, "a") as f:
+            f.write(f"{date} {time_start}\n")
+        with open(timestamps_end, "a") as f:
+            f.write(f"{date} {time_end}\n")
     except Exception as e:
         raise Exception("An error occurred while writing the timestamp:", e)
 
@@ -189,10 +215,25 @@ def process_csv_files(csv_file_names, sub_directory, directory_number, date, tim
             csv_file_path = os.path.join(Parent_Directory, sub_directory, csv_file_name)
             data_frame = pd.read_csv(csv_file_path)
             frame_date, frame_time = decode_recording_file_name(sub_directory)
-            offset = (int(data_frame["timestamp"].iloc[0]) + int(data_frame["timestamp"].iloc[-1])) / 2
-            offset_in_seconds = offset / 1e6 
-            frame_time = (datetime.strptime(frame_time, "%H:%M:%S.%f") + timedelta(seconds=offset_in_seconds)).strftime("%H:%M:%S.%f")
-            write_time_stamp(frame_date, frame_time, sub_directory)
+            start_delay = int(data_frame["timestamp"].iloc[0])
+            end_delay = int(data_frame["timestamp"].iloc[-1])
+            offset = (start_delay + end_delay) / 2
+            offset_in_seconds = offset / 1e6
+            offset_start = start_delay / 1e6
+            offset_end = end_delay / 1e6
+            new_time = (
+                datetime.strptime(frame_time, "%H:%M:%S.%f")
+                + timedelta(seconds=offset_in_seconds)
+            ).strftime("%H:%M:%S.%f")
+            frame_time_start = (
+                datetime.strptime(frame_time, "%H:%M:%S.%f")
+                + timedelta(seconds=offset_start)
+            ).strftime("%H:%M:%S.%f")
+            frame_time_end = (
+                datetime.strptime(frame_time, "%H:%M:%S.%f")
+                + timedelta(seconds=offset_end)
+            ).strftime("%H:%M:%S.%f")
+            write_time_stamp(frame_date, new_time, frame_time_start, frame_time_end, sub_directory)
             data_frame = data_frame[
                 ["Points_m_XYZ:0", "Points_m_XYZ:1", "Points_m_XYZ:2", "intensity"]
             ]
