@@ -216,7 +216,7 @@ class Home(QMainWindow):
         path = QFileDialog.getExistingDirectory(
             self,
             "Select the directory to save the .pcap file",
-            "D:\\CMS\\Bachelor\\Softwares\\VeloView\\records\\Test parent style",
+            "D:\\CMS\\Bachelor\\Codes\\velodyne live stream trial 2\\SAVE_FOLDER",
         )
         if path == "":
             self.errorMessage("Error", "Please select a directory")
