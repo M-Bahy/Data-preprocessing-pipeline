@@ -104,6 +104,8 @@ def output_folder_hierarchy(sub_directory, date):
         os.makedirs(data_dir, exist_ok=True)
         if Filter:
             shutil.copy(Filter_script_path, data_dir)
+        csv_path = os.path.join(Parent_Directory,sub_directory,sub_directory)
+        os.makedirs(csv_path , exist_ok=True)
         print("Output folder hierarchy created successfully.")
     except Exception as e:
         raise Exception(
