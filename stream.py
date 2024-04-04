@@ -60,39 +60,6 @@ def stream(DATA_QUEUE, PKTS):
             DATA_QUEUE.put({"data": points, "time": stamp})
 
 
-def convert_to_csv(DATA_QUEUE):
-    processed = 0
-    while True:
-        if not DATA_QUEUE.empty():
-            dequeued = DATA_QUEUE.get()
-            if not isinstance(dequeued["data"], np.ndarray):
-                print("Total number of packets converted to csv : ", processed)
-                break
-            points = dequeued["data"]
-            timestamp = dequeued["time"]
-            processed += 1
-            with open(
-                f"{SAVE_FOLDER}/{SUB_DIRECTORY}/{timestamp}.csv", "w", newline=""
-            ) as file:
-                writer = csv.writer(file)
-                writer.writerow(
-                    [
-                        "Points_m_XYZ:0",
-                        "Points_m_XYZ:1",
-                        "Points_m_XYZ:2",
-                        "intensity",
-                    ]
-                )
-                for point in points:
-                    y = point[0]
-                    x = -point[
-                        1
-                    ]  # because the decoder is following the ROS coordinate system
-                    z = point[2]
-                    intensity = point[3]
-                    writer.writerow([x, y, z, intensity])
-
-
 def create_pcap(PKTS):
     pcap_writer = PcapWriter(
         f"{SAVE_FOLDER}/{SUB_DIRECTORY}/{SUB_DIRECTORY}.pcap", linktype=1
