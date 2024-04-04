@@ -74,10 +74,9 @@ def create_pcap(PKTS):
         kimo = Ether(HEADERS + pkt["data"])
         kimo.time = pkt["time"]
         pcap_writer.write(kimo)
-        if counter == 1:
-            # write pkt["time"] to a file
-            with open(f"{SAVE_FOLDER}/{SUB_DIRECTORY}/time.txt", "w") as file:
-                file.write(str(pkt["time"]))
+        # if counter == 1:
+        #     with open(f"{SAVE_FOLDER}/{SUB_DIRECTORY}/time.txt", "w") as file:
+        #         file.write(str(pkt["time"]))
 
 
 def stop_stream(processA):
