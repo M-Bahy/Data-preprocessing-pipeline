@@ -102,7 +102,6 @@ def pcap_encoder():
 
     processA = Process(target=stream, args=(DATA_QUEUE, PKTS))
     processA.start()
-    processB = Process(target=convert_to_csv, args=(DATA_QUEUE,))
     processC = Process(target=create_pcap, args=(PKTS,))
     processC.start()
 
