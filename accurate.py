@@ -189,8 +189,9 @@ def process_csv_files(csv_file_names, sub_directory, directory_number, date, tim
             csv_file_path = os.path.join(Parent_Directory, sub_directory, csv_file_name)
             data_frame = pd.read_csv(csv_file_path)
             frame_date, frame_time = decode_recording_file_name(sub_directory)
-            offset = (int(data_frame["Timestamp"].iloc[0]) + int(data_frame["Timestamp"].iloc[-1])) / 2
-            frame_time = (datetime.strptime(frame_time, "%H:%M:%S.%f") + timedelta(seconds=offset)).strftime("%H:%M:%S.%f")
+            offset = (int(data_frame["timestamp"].iloc[0]) + int(data_frame["timestamp"].iloc[-1])) / 2
+            offset_in_seconds = offset / 1e6 
+            frame_time = (datetime.strptime(frame_time, "%H:%M:%S.%f") + timedelta(seconds=offset_in_seconds)).strftime("%H:%M:%S.%f")
             write_time_stamp(frame_date, frame_time, sub_directory)
             data_frame = data_frame[
                 ["Points_m_XYZ:0", "Points_m_XYZ:1", "Points_m_XYZ:2", "intensity"]
