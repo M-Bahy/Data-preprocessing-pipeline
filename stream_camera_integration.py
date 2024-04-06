@@ -37,19 +37,20 @@ def get_time():
     return datetime.now().strftime("%H:%M:%S.%f")
 
 
-def read_live_data(ip, port, PKTS, as_pcl_structs=False):
+def read_live_data(ip, port, PKTS,CAMERA_SIGNAL, as_pcl_structs=False):
     decoder = vd.StreamDecoder()
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.bind((ip, port))
     while True:
         data, address = s.recvfrom(vd.PACKET_SIZE * 2)
         recv_stamp = time.time()
+        CAMERA_SIGNAL.put("START")
         PKTS.put({"data": data, "time": recv_stamp})
         yield decoder.decode(recv_stamp, data, as_pcl_structs)
 
 
-def stream(PKTS):
-    for Data in read_live_data(IP, PORT, PKTS):
+def stream(PKTS,CAMERA_SIGNAL):
+    for Data in read_live_data(IP, PORT, PKTS,CAMERA_SIGNAL):
         if Data != None:
             stamp, points = Data
             print(len(points))
@@ -81,6 +82,7 @@ def record(CAMERA_SIGNAL):
     out = cv2.VideoWriter(
         f"{SAVE_FOLDER}/{SUB_DIRECTORY}/{SUB_DIRECTORY}.mp4", cv2.VideoWriter_fourcc(*"mp4v"), 15.0, (frame_width, frame_height)
     )
+    begin = CAMERA_SIGNAL.get() # Wait for signal to start recording
     print("Recording...")
     while True:
         ret, frame = cam.read()
@@ -107,7 +109,7 @@ def pcap_camera_encoder():
 
     processB = Process(target=record, args=(CAMERA_SIGNAL,))
     processB.start()
-    processA = Process(target=stream, args=(PKTS,))
+    processA = Process(target=stream, args=(PKTS,CAMERA_SIGNAL))
     processA.start()
     processC = Process(target=create_pcap, args=(PKTS,))
     processC.start()
@@ -128,6 +130,5 @@ def pcap_camera_encoder():
 
     print("Recording time : ", end_time - start_time)
 
-
-if __name__ == "__main__":
-    pcap_encoder()
+# if __name__ == "__main__":
+#     pcap_camera_encoder()

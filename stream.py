@@ -113,3 +113,7 @@ def pcap_encoder():
     end_time = datetime.now()
 
     print("Recording time : ", end_time - start_time)
+
+
+if __name__ == "__main__":
+    pcap_encoder()
