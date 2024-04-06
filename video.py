@@ -1,7 +1,7 @@
 import cv2
+import keyboard
 
-
-def camera():
+def camera(path):
     # Open the camera
     cam = cv2.VideoCapture(1, cv2.CAP_DSHOW)
 
@@ -12,9 +12,9 @@ def camera():
     # Define the codec using VideoWriter_fourcc and create a VideoWriter object
     # We specify output file name "output.mp4", codec "mp4v", FPS as 30.0, and frame size as (frame_width, frame_height)
     out = cv2.VideoWriter(
-        "output.mp4", cv2.VideoWriter_fourcc(*"mp4v"), 15.0, (frame_width, frame_height)
+        "path.mp4", cv2.VideoWriter_fourcc(*"mp4v"), 15.0, (frame_width, frame_height)
     )
-
+    print("Recording...")
     while True:
         ret, frame = cam.read()
         if ret == True:
@@ -22,10 +22,11 @@ def camera():
             out.write(frame)
 
             # Display the resulting frame (optional)
-            cv2.imshow("Frame", frame)
+            #cv2.imshow("Frame", frame)
 
             # Break the loop on 'q' key press
-            if cv2.waitKey(1) & 0xFF == ord("q"):
+            if keyboard.is_pressed('esc'):
+                print("Recording stopped.")
                 break
         else:
             break
@@ -34,6 +35,3 @@ def camera():
     cam.release()
     out.release()
     cv2.destroyAllWindows()
-
-
-camera()

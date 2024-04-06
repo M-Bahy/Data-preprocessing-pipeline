@@ -9,3 +9,4 @@ filtering test.py
 Useless stuff/*
 GUI.ui~*
 __pycache__/*
+*.mp4
