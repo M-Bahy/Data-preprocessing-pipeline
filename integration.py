@@ -1,17 +1,15 @@
 import velodyne_decoder as vd
 import socket
-import sys
 import time
-import csv
+import cv2
 import os
 import numpy as np
 from datetime import datetime
 from multiprocessing import Process, Queue
 import keyboard
-from scapy.all import wrpcap, Raw
 from scapy.utils import PcapWriter
 from scapy.layers.l2 import Ether
-from dotenv import load_dotenv, set_key
+from dotenv import load_dotenv
 
 load_dotenv()
 IP = "192.168.1.1"
@@ -81,24 +79,46 @@ def create_pcap(PKTS):
         #         file.write(str(pkt["time"]))
 
 def fake_camera(CAMERA_SIGNAL):
-    start = CAMERA_SIGNAL.get()
-    if start == "START":
-        print("Camera started")
-    stop = CAMERA_SIGNAL.get()
-    if stop == "STOP":
-        print("Camera stopped")
+    cam = cv2.VideoCapture(1, cv2.CAP_DSHOW)
+    frame_width = int(cam.get(3))
+    frame_height = int(cam.get(4))
+    out = cv2.VideoWriter(
+        f"{SAVE_FOLDER}/{SUB_DIRECTORY}/{SUB_DIRECTORY}.mp4", cv2.VideoWriter_fourcc(*"mp4v"), 15.0, (frame_width, frame_height)
+    )
+    begin = CAMERA_SIGNAL.get() # Wait for signal to start recording
+    if begin == "START":
+        print("Recording...")
+    while True:
+        ret, frame = cam.read()
+        if ret == True:
+            out.write(frame)
+        try:
+            signal = CAMERA_SIGNAL.get(block=False)
+            if signal == "STOP":
+                print("Camera recording stopped.")
+                break
+        except:
+            pass
+        else:
+            break
+    cam.release()
+    out.release()
+    cv2.destroyAllWindows()
 
 def pcap_encoder():
 
     start_time = datetime.now()
-    os.makedirs(f"{SAVE_FOLDER}/{SUB_DIRECTORY}/{SUB_DIRECTORY}",exist_ok=True)
-
+    os.makedirs(f"{SAVE_FOLDER}/{SUB_DIRECTORY}/{SUB_DIRECTORY} LiDAR Frames",exist_ok=True)
+    os.makedirs(f"{SAVE_FOLDER}/{SUB_DIRECTORY}/output_frames",exist_ok=True)
+    
+    
     processA = Process(target=stream, args=( PKTS,CAMERA_SIGNAL))
-    processA.start()
+    processA.start()    
     processB = Process(target=fake_camera, args=(CAMERA_SIGNAL,))
     processB.start()
     processC = Process(target=create_pcap, args=(PKTS,))
     processC.start()
+    
 
     while True:
         if keyboard.is_pressed("esc"):
