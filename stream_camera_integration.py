@@ -83,7 +83,8 @@ def record(CAMERA_SIGNAL):
         f"{SAVE_FOLDER}/{SUB_DIRECTORY}/{SUB_DIRECTORY}.mp4", cv2.VideoWriter_fourcc(*"mp4v"), 15.0, (frame_width, frame_height)
     )
     begin = CAMERA_SIGNAL.get() # Wait for signal to start recording
-    print("Recording...")
+    if begin == "START":
+        print("Recording...")
     while True:
         ret, frame = cam.read()
         if ret == True:
