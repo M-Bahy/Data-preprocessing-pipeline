@@ -100,7 +100,7 @@ def record(CAMERA_SIGNAL):
     cv2.destroyAllWindows()
 
 
-def pcap_encoder():
+def pcap_camera_encoder():
 
     start_time = datetime.now()
     os.makedirs(f"{SAVE_FOLDER}/{SUB_DIRECTORY}/{SUB_DIRECTORY}", exist_ok=True)
