@@ -19,7 +19,7 @@ IPV4 = (
 )
 UDP = b"\x09\x40\x09\x40\x04\xbe\x00\x00"
 HEADERS = BROADCAST + IPV4 + UDP
-DATA_QUEUE = Queue(-1)
+CAMERA_SIGNAL = Queue(1)
 PKTS = Queue(-1)
 SAVE_FOLDER = os.getenv("SAVE_FOLDER")
 SUB_DIRECTORY = os.getenv("SUB_DIRECTORY")
@@ -48,13 +48,11 @@ def read_live_data(ip, port, PKTS, as_pcl_structs=False):
         yield decoder.decode(recv_stamp, data, as_pcl_structs)
 
 
-def stream(DATA_QUEUE, PKTS):
+def stream(PKTS):
     for Data in read_live_data(IP, PORT, PKTS):
         if Data != None:
             stamp, points = Data
-            stamp = str(get_timestamp())
             print(len(points))
-            DATA_QUEUE.put({"data": points, "time": stamp})
 
 
 def create_pcap(PKTS):
@@ -76,50 +74,27 @@ def create_pcap(PKTS):
         #         file.write(str(pkt["time"]))
 
 
-def stop_stream(processA):
-    def stop(key):
-        try:
-            if key.char == "a":
-                processA.terminate()
-                DATA_QUEUE.put({"data": "STOP", "time": get_timestamp()})
-                PKTS.put({"data": "STOP", "time": get_timestamp()})
-                return False  # Stop the listener
-        except AttributeError:
-            pass  # Non-character keys
-
-    return stop
-
-def record(path):
-    # Open the camera
+def record(CAMERA_SIGNAL):
     cam = cv2.VideoCapture(1, cv2.CAP_DSHOW)
-
-    # Get the default resolutions
     frame_width = int(cam.get(3))
     frame_height = int(cam.get(4))
-
-    # Define the codec using VideoWriter_fourcc and create a VideoWriter object
-    # We specify output file name "output.mp4", codec "mp4v", FPS as 30.0, and frame size as (frame_width, frame_height)
     out = cv2.VideoWriter(
-        "path.mp4", cv2.VideoWriter_fourcc(*"mp4v"), 15.0, (frame_width, frame_height)
+        f"{SAVE_FOLDER}/{SUB_DIRECTORY}/{SUB_DIRECTORY}.mp4", cv2.VideoWriter_fourcc(*"mp4v"), 15.0, (frame_width, frame_height)
     )
     print("Recording...")
     while True:
         ret, frame = cam.read()
         if ret == True:
-            # Write the frame to the output file
             out.write(frame)
-
-            # Display the resulting frame (optional)
-            # cv2.imshow("Frame", frame)
-
-            # Break the loop on 'q' key press
-            if keyboard.is_pressed("esc"):
-                print("Recording stopped.")
+        try:
+            signal = CAMERA_SIGNAL.get(block=False)
+            if signal == "STOP":
+                print("Camera recording stopped.")
                 break
+        except:
+            pass
         else:
             break
-
-    # Release the camera and writer, destroy all windows
     cam.release()
     out.release()
     cv2.destroyAllWindows()
@@ -128,24 +103,31 @@ def record(path):
 def pcap_encoder():
 
     start_time = datetime.now()
-    os.makedirs(f"{SAVE_FOLDER}/{SUB_DIRECTORY}/{SUB_DIRECTORY}",exist_ok=True)
+    os.makedirs(f"{SAVE_FOLDER}/{SUB_DIRECTORY}/{SUB_DIRECTORY}", exist_ok=True)
 
-    processA = Process(target=stream, args=(DATA_QUEUE, PKTS))
+    processB = Process(target=record, args=(CAMERA_SIGNAL,))
+    processB.start()
+    processA = Process(target=stream, args=(PKTS,))
     processA.start()
     processC = Process(target=create_pcap, args=(PKTS,))
     processC.start()
 
     while True:
-        if keyboard.is_pressed("a"):
+        if keyboard.is_pressed("esc"):
             processA.terminate()
-            DATA_QUEUE.put({"data": "STOP", "time": get_timestamp()})
             PKTS.put({"data": "STOP", "time": get_timestamp()})
+            CAMERA_SIGNAL.put("STOP")
             break
 
     # Wait for both processes to finish
     processA.join()
+    processB.join()
     processC.join()
 
     end_time = datetime.now()
 
     print("Recording time : ", end_time - start_time)
+
+
+if __name__ == "__main__":
+    pcap_encoder()
