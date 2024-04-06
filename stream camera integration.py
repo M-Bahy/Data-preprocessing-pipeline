@@ -1,17 +1,14 @@
 import velodyne_decoder as vd
 import socket
-import sys
 import time
-import csv
+import cv2
 import os
-import numpy as np
 from datetime import datetime
 from multiprocessing import Process, Queue
-from pynput import keyboard
-from scapy.all import wrpcap, Raw
+import keyboard
 from scapy.utils import PcapWriter
 from scapy.layers.l2 import Ether
-from dotenv import load_dotenv, set_key
+from dotenv import load_dotenv
 
 load_dotenv()
 IP = "192.168.1.1"
@@ -92,6 +89,41 @@ def stop_stream(processA):
 
     return stop
 
+def record(path):
+    # Open the camera
+    cam = cv2.VideoCapture(1, cv2.CAP_DSHOW)
+
+    # Get the default resolutions
+    frame_width = int(cam.get(3))
+    frame_height = int(cam.get(4))
+
+    # Define the codec using VideoWriter_fourcc and create a VideoWriter object
+    # We specify output file name "output.mp4", codec "mp4v", FPS as 30.0, and frame size as (frame_width, frame_height)
+    out = cv2.VideoWriter(
+        "path.mp4", cv2.VideoWriter_fourcc(*"mp4v"), 15.0, (frame_width, frame_height)
+    )
+    print("Recording...")
+    while True:
+        ret, frame = cam.read()
+        if ret == True:
+            # Write the frame to the output file
+            out.write(frame)
+
+            # Display the resulting frame (optional)
+            # cv2.imshow("Frame", frame)
+
+            # Break the loop on 'q' key press
+            if keyboard.is_pressed("esc"):
+                print("Recording stopped.")
+                break
+        else:
+            break
+
+    # Release the camera and writer, destroy all windows
+    cam.release()
+    out.release()
+    cv2.destroyAllWindows()
+
 
 def pcap_encoder():
 
@@ -103,8 +135,12 @@ def pcap_encoder():
     processC = Process(target=create_pcap, args=(PKTS,))
     processC.start()
 
-    listener = keyboard.Listener(on_press=stop_stream(processA))
-    listener.start()
+    while True:
+        if keyboard.is_pressed("a"):
+            processA.terminate()
+            DATA_QUEUE.put({"data": "STOP", "time": get_timestamp()})
+            PKTS.put({"data": "STOP", "time": get_timestamp()})
+            break
 
     # Wait for both processes to finish
     processA.join()

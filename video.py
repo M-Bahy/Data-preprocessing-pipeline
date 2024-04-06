@@ -1,6 +1,7 @@
 import cv2
 import keyboard
 
+
 def record(path):
     # Open the camera
     cam = cv2.VideoCapture(1, cv2.CAP_DSHOW)
@@ -22,10 +23,10 @@ def record(path):
             out.write(frame)
 
             # Display the resulting frame (optional)
-            #cv2.imshow("Frame", frame)
+            # cv2.imshow("Frame", frame)
 
             # Break the loop on 'q' key press
-            if keyboard.is_pressed('esc'):
+            if keyboard.is_pressed("esc"):
                 print("Recording stopped.")
                 break
         else:
