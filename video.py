@@ -12,7 +12,7 @@ def camera():
     # Define the codec using VideoWriter_fourcc and create a VideoWriter object
     # We specify output file name "output.mp4", codec "mp4v", FPS as 30.0, and frame size as (frame_width, frame_height)
     out = cv2.VideoWriter(
-        "output.mp4", cv2.VideoWriter_fourcc(*"mp4v"), 30.0, (frame_width, frame_height)
+        "output.mp4", cv2.VideoWriter_fourcc(*"mp4v"), 15.0, (frame_width, frame_height)
     )
 
     while True:
