@@ -1,7 +1,7 @@
 import cv2
 import keyboard
 
-def camera(path):
+def record(path):
     # Open the camera
     cam = cv2.VideoCapture(1, cv2.CAP_DSHOW)
 
