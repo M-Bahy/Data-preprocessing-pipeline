@@ -106,7 +106,7 @@ def fake_camera(CAMERA_SIGNAL):
     print("Camera recording stopped.")
 
 
-def pcap_encoder():
+def lidar_camera_encoder():
     start_time = datetime.now()
     os.makedirs(
         f"{SAVE_FOLDER}/{SUB_DIRECTORY}/{SUB_DIRECTORY} LiDAR Frames", exist_ok=True

@@ -233,9 +233,11 @@ class Home(QMainWindow):
 
         from stream import pcap_encoder
         from stream_camera_integration import pcap_camera_encoder
+        from integration import lidar_camera_encoder
         
         #pcap_encoder()
-        pcap_camera_encoder()
+        #pcap_camera_encoder()
+        lidar_camera_encoder()
 
     def visualize(self):
         """
