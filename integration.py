@@ -137,5 +137,5 @@ def lidar_camera_encoder():
     print("Recording time : ", end_time - start_time)
 
 
-if __name__ == "__main__":
-    pcap_encoder()
+# if __name__ == "__main__":
+#     pcap_encoder()
